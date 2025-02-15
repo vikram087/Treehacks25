@@ -1,0 +1,1104 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7222EFDF2D60B37700EBA569 /* TreeHacks25AppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7222EFDE2D60B37700EBA569 /* TreeHacks25AppApp.swift */; };
+		7222EFE12D60B37700EBA569 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7222EFE02D60B37700EBA569 /* ContentView.swift */; };
+		7222EFE32D60B37A00EBA569 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7222EFE22D60B37A00EBA569 /* Assets.xcassets */; };
+		7222EFE62D60B37A00EBA569 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7222EFE52D60B37A00EBA569 /* Preview Assets.xcassets */; };
+		7222EFF02D60B37B00EBA569 /* TreeHacks25AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7222EFEF2D60B37B00EBA569 /* TreeHacks25AppTests.swift */; };
+		7222EFFA2D60B37B00EBA569 /* TreeHacks25AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7222EFF92D60B37B00EBA569 /* TreeHacks25AppUITests.swift */; };
+		7222EFFC2D60B37B00EBA569 /* TreeHacks25AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7222EFFB2D60B37B00EBA569 /* TreeHacks25AppUITestsLaunchTests.swift */; };
+		7222F00F2D60B3DE00EBA569 /* WatchAppCompanionApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7222F00E2D60B3DE00EBA569 /* WatchAppCompanionApp.swift */; };
+		7222F0112D60B3DE00EBA569 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7222F0102D60B3DE00EBA569 /* ContentView.swift */; };
+		7222F0132D60B3E400EBA569 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7222F0122D60B3E400EBA569 /* Assets.xcassets */; };
+		7222F0162D60B3E400EBA569 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7222F0152D60B3E400EBA569 /* Preview Assets.xcassets */; };
+		7222F0202D60B3E500EBA569 /* WatchAppCompanion_Watch_AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7222F01F2D60B3E500EBA569 /* WatchAppCompanion_Watch_AppTests.swift */; };
+		7222F02A2D60B3E600EBA569 /* WatchAppCompanion_Watch_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7222F0292D60B3E600EBA569 /* WatchAppCompanion_Watch_AppUITests.swift */; };
+		7222F02C2D60B3E600EBA569 /* WatchAppCompanion_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7222F02B2D60B3E600EBA569 /* WatchAppCompanion_Watch_AppUITestsLaunchTests.swift */; };
+		7222F02F2D60B3E600EBA569 /* WatchAppCompanion Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 7222F00C2D60B3DD00EBA569 /* WatchAppCompanion Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		7222F03C2D60B4B900EBA569 /* TerraRTiOS in Frameworks */ = {isa = PBXBuildFile; productRef = 7222F03B2D60B4B900EBA569 /* TerraRTiOS */; };
+		7222F03F2D60B64500EBA569 /* TerraiOS in Frameworks */ = {isa = PBXBuildFile; productRef = 7222F03E2D60B64500EBA569 /* TerraiOS */; };
+		7222F0422D60C69300EBA569 /* TerraRTiOS in Frameworks */ = {isa = PBXBuildFile; productRef = 7222F0412D60C69300EBA569 /* TerraRTiOS */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		7222EFEC2D60B37A00EBA569 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7222EFD32D60B37700EBA569 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7222EFDA2D60B37700EBA569;
+			remoteInfo = TreeHacks25App;
+		};
+		7222EFF62D60B37B00EBA569 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7222EFD32D60B37700EBA569 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7222EFDA2D60B37700EBA569;
+			remoteInfo = TreeHacks25App;
+		};
+		7222F01C2D60B3E500EBA569 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7222EFD32D60B37700EBA569 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7222F00B2D60B3DD00EBA569;
+			remoteInfo = "WatchAppCompanion Watch App";
+		};
+		7222F0262D60B3E600EBA569 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7222EFD32D60B37700EBA569 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7222F00B2D60B3DD00EBA569;
+			remoteInfo = "WatchAppCompanion Watch App";
+		};
+		7222F02D2D60B3E600EBA569 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7222EFD32D60B37700EBA569 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7222F00B2D60B3DD00EBA569;
+			remoteInfo = "WatchAppCompanion Watch App";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7222F0332D60B3E800EBA569 /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				7222F02F2D60B3E600EBA569 /* WatchAppCompanion Watch App.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		7222EFDB2D60B37700EBA569 /* TreeHacks25App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TreeHacks25App.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7222EFDE2D60B37700EBA569 /* TreeHacks25AppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeHacks25AppApp.swift; sourceTree = "<group>"; };
+		7222EFE02D60B37700EBA569 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		7222EFE22D60B37A00EBA569 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7222EFE52D60B37A00EBA569 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		7222EFEB2D60B37A00EBA569 /* TreeHacks25AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TreeHacks25AppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7222EFEF2D60B37B00EBA569 /* TreeHacks25AppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeHacks25AppTests.swift; sourceTree = "<group>"; };
+		7222EFF52D60B37B00EBA569 /* TreeHacks25AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TreeHacks25AppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		7222EFF92D60B37B00EBA569 /* TreeHacks25AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeHacks25AppUITests.swift; sourceTree = "<group>"; };
+		7222EFFB2D60B37B00EBA569 /* TreeHacks25AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TreeHacks25AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		7222F00C2D60B3DD00EBA569 /* WatchAppCompanion Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WatchAppCompanion Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7222F00E2D60B3DE00EBA569 /* WatchAppCompanionApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAppCompanionApp.swift; sourceTree = "<group>"; };
+		7222F0102D60B3DE00EBA569 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		7222F0122D60B3E400EBA569 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7222F0152D60B3E400EBA569 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		7222F01B2D60B3E500EBA569 /* WatchAppCompanion Watch AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "WatchAppCompanion Watch AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7222F01F2D60B3E500EBA569 /* WatchAppCompanion_Watch_AppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAppCompanion_Watch_AppTests.swift; sourceTree = "<group>"; };
+		7222F0252D60B3E600EBA569 /* WatchAppCompanion Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "WatchAppCompanion Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7222F0292D60B3E600EBA569 /* WatchAppCompanion_Watch_AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAppCompanion_Watch_AppUITests.swift; sourceTree = "<group>"; };
+		7222F02B2D60B3E600EBA569 /* WatchAppCompanion_Watch_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAppCompanion_Watch_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		72D31F772D61296A00BC2743 /* WatchAppCompanion-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "WatchAppCompanion-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
+		72D31F782D61391000BC2743 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		72D31F792D6139F900BC2743 /* WatchAppCompanion Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "WatchAppCompanion Watch App.entitlements"; sourceTree = "<group>"; };
+		72D31F7A2D613B1700BC2743 /* TreeHacks25App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TreeHacks25App.entitlements; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7222EFD82D60B37700EBA569 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7222F03C2D60B4B900EBA569 /* TerraRTiOS in Frameworks */,
+				7222F03F2D60B64500EBA569 /* TerraiOS in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222EFE82D60B37A00EBA569 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222EFF22D60B37B00EBA569 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222F0092D60B3DD00EBA569 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7222F0422D60C69300EBA569 /* TerraRTiOS in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222F0182D60B3E500EBA569 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222F0222D60B3E600EBA569 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7222EFD22D60B37700EBA569 = {
+			isa = PBXGroup;
+			children = (
+				7222EFDD2D60B37700EBA569 /* TreeHacks25App */,
+				7222EFEE2D60B37A00EBA569 /* TreeHacks25AppTests */,
+				7222EFF82D60B37B00EBA569 /* TreeHacks25AppUITests */,
+				7222F00D2D60B3DE00EBA569 /* WatchAppCompanion Watch App */,
+				7222F01E2D60B3E500EBA569 /* WatchAppCompanion Watch AppTests */,
+				7222F0282D60B3E600EBA569 /* WatchAppCompanion Watch AppUITests */,
+				7222EFDC2D60B37700EBA569 /* Products */,
+				7222F0402D60C69300EBA569 /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		7222EFDC2D60B37700EBA569 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7222EFDB2D60B37700EBA569 /* TreeHacks25App.app */,
+				7222EFEB2D60B37A00EBA569 /* TreeHacks25AppTests.xctest */,
+				7222EFF52D60B37B00EBA569 /* TreeHacks25AppUITests.xctest */,
+				7222F00C2D60B3DD00EBA569 /* WatchAppCompanion Watch App.app */,
+				7222F01B2D60B3E500EBA569 /* WatchAppCompanion Watch AppTests.xctest */,
+				7222F0252D60B3E600EBA569 /* WatchAppCompanion Watch AppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7222EFDD2D60B37700EBA569 /* TreeHacks25App */ = {
+			isa = PBXGroup;
+			children = (
+				72D31F7A2D613B1700BC2743 /* TreeHacks25App.entitlements */,
+				72D31F782D61391000BC2743 /* Info.plist */,
+				7222EFDE2D60B37700EBA569 /* TreeHacks25AppApp.swift */,
+				7222EFE02D60B37700EBA569 /* ContentView.swift */,
+				7222EFE22D60B37A00EBA569 /* Assets.xcassets */,
+				7222EFE42D60B37A00EBA569 /* Preview Content */,
+			);
+			path = TreeHacks25App;
+			sourceTree = "<group>";
+		};
+		7222EFE42D60B37A00EBA569 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				7222EFE52D60B37A00EBA569 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		7222EFEE2D60B37A00EBA569 /* TreeHacks25AppTests */ = {
+			isa = PBXGroup;
+			children = (
+				7222EFEF2D60B37B00EBA569 /* TreeHacks25AppTests.swift */,
+			);
+			path = TreeHacks25AppTests;
+			sourceTree = "<group>";
+		};
+		7222EFF82D60B37B00EBA569 /* TreeHacks25AppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				7222EFF92D60B37B00EBA569 /* TreeHacks25AppUITests.swift */,
+				7222EFFB2D60B37B00EBA569 /* TreeHacks25AppUITestsLaunchTests.swift */,
+			);
+			path = TreeHacks25AppUITests;
+			sourceTree = "<group>";
+		};
+		7222F00D2D60B3DE00EBA569 /* WatchAppCompanion Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				72D31F792D6139F900BC2743 /* WatchAppCompanion Watch App.entitlements */,
+				72D31F772D61296A00BC2743 /* WatchAppCompanion-Watch-App-Info.plist */,
+				7222F00E2D60B3DE00EBA569 /* WatchAppCompanionApp.swift */,
+				7222F0102D60B3DE00EBA569 /* ContentView.swift */,
+				7222F0122D60B3E400EBA569 /* Assets.xcassets */,
+				7222F0142D60B3E400EBA569 /* Preview Content */,
+			);
+			path = "WatchAppCompanion Watch App";
+			sourceTree = "<group>";
+		};
+		7222F0142D60B3E400EBA569 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				7222F0152D60B3E400EBA569 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		7222F01E2D60B3E500EBA569 /* WatchAppCompanion Watch AppTests */ = {
+			isa = PBXGroup;
+			children = (
+				7222F01F2D60B3E500EBA569 /* WatchAppCompanion_Watch_AppTests.swift */,
+			);
+			path = "WatchAppCompanion Watch AppTests";
+			sourceTree = "<group>";
+		};
+		7222F0282D60B3E600EBA569 /* WatchAppCompanion Watch AppUITests */ = {
+			isa = PBXGroup;
+			children = (
+				7222F0292D60B3E600EBA569 /* WatchAppCompanion_Watch_AppUITests.swift */,
+				7222F02B2D60B3E600EBA569 /* WatchAppCompanion_Watch_AppUITestsLaunchTests.swift */,
+			);
+			path = "WatchAppCompanion Watch AppUITests";
+			sourceTree = "<group>";
+		};
+		7222F0402D60C69300EBA569 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7222EFDA2D60B37700EBA569 /* TreeHacks25App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7222EFFF2D60B37B00EBA569 /* Build configuration list for PBXNativeTarget "TreeHacks25App" */;
+			buildPhases = (
+				7222EFD72D60B37700EBA569 /* Sources */,
+				7222EFD82D60B37700EBA569 /* Frameworks */,
+				7222EFD92D60B37700EBA569 /* Resources */,
+				7222F0332D60B3E800EBA569 /* Embed Watch Content */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7222F02E2D60B3E600EBA569 /* PBXTargetDependency */,
+			);
+			name = TreeHacks25App;
+			packageProductDependencies = (
+				7222F03B2D60B4B900EBA569 /* TerraRTiOS */,
+				7222F03E2D60B64500EBA569 /* TerraiOS */,
+			);
+			productName = TreeHacks25App;
+			productReference = 7222EFDB2D60B37700EBA569 /* TreeHacks25App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7222EFEA2D60B37A00EBA569 /* TreeHacks25AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7222F0022D60B37B00EBA569 /* Build configuration list for PBXNativeTarget "TreeHacks25AppTests" */;
+			buildPhases = (
+				7222EFE72D60B37A00EBA569 /* Sources */,
+				7222EFE82D60B37A00EBA569 /* Frameworks */,
+				7222EFE92D60B37A00EBA569 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7222EFED2D60B37A00EBA569 /* PBXTargetDependency */,
+			);
+			name = TreeHacks25AppTests;
+			productName = TreeHacks25AppTests;
+			productReference = 7222EFEB2D60B37A00EBA569 /* TreeHacks25AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		7222EFF42D60B37B00EBA569 /* TreeHacks25AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7222F0052D60B37B00EBA569 /* Build configuration list for PBXNativeTarget "TreeHacks25AppUITests" */;
+			buildPhases = (
+				7222EFF12D60B37B00EBA569 /* Sources */,
+				7222EFF22D60B37B00EBA569 /* Frameworks */,
+				7222EFF32D60B37B00EBA569 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7222EFF72D60B37B00EBA569 /* PBXTargetDependency */,
+			);
+			name = TreeHacks25AppUITests;
+			productName = TreeHacks25AppUITests;
+			productReference = 7222EFF52D60B37B00EBA569 /* TreeHacks25AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+		7222F00B2D60B3DD00EBA569 /* WatchAppCompanion Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7222F0302D60B3E800EBA569 /* Build configuration list for PBXNativeTarget "WatchAppCompanion Watch App" */;
+			buildPhases = (
+				7222F0082D60B3DD00EBA569 /* Sources */,
+				7222F0092D60B3DD00EBA569 /* Frameworks */,
+				7222F00A2D60B3DD00EBA569 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "WatchAppCompanion Watch App";
+			packageProductDependencies = (
+				7222F0412D60C69300EBA569 /* TerraRTiOS */,
+			);
+			productName = "WatchAppCompanion Watch App";
+			productReference = 7222F00C2D60B3DD00EBA569 /* WatchAppCompanion Watch App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		7222F01A2D60B3E500EBA569 /* WatchAppCompanion Watch AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7222F0342D60B3E800EBA569 /* Build configuration list for PBXNativeTarget "WatchAppCompanion Watch AppTests" */;
+			buildPhases = (
+				7222F0172D60B3E500EBA569 /* Sources */,
+				7222F0182D60B3E500EBA569 /* Frameworks */,
+				7222F0192D60B3E500EBA569 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7222F01D2D60B3E500EBA569 /* PBXTargetDependency */,
+			);
+			name = "WatchAppCompanion Watch AppTests";
+			productName = "WatchAppCompanion Watch AppTests";
+			productReference = 7222F01B2D60B3E500EBA569 /* WatchAppCompanion Watch AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		7222F0242D60B3E600EBA569 /* WatchAppCompanion Watch AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7222F0372D60B3E800EBA569 /* Build configuration list for PBXNativeTarget "WatchAppCompanion Watch AppUITests" */;
+			buildPhases = (
+				7222F0212D60B3E600EBA569 /* Sources */,
+				7222F0222D60B3E600EBA569 /* Frameworks */,
+				7222F0232D60B3E600EBA569 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				7222F0272D60B3E600EBA569 /* PBXTargetDependency */,
+			);
+			name = "WatchAppCompanion Watch AppUITests";
+			productName = "WatchAppCompanion Watch AppUITests";
+			productReference = 7222F0252D60B3E600EBA569 /* WatchAppCompanion Watch AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7222EFD32D60B37700EBA569 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					7222EFDA2D60B37700EBA569 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+					7222EFEA2D60B37A00EBA569 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = 7222EFDA2D60B37700EBA569;
+					};
+					7222EFF42D60B37B00EBA569 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = 7222EFDA2D60B37700EBA569;
+					};
+					7222F00B2D60B3DD00EBA569 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+					7222F01A2D60B3E500EBA569 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = 7222F00B2D60B3DD00EBA569;
+					};
+					7222F0242D60B3E600EBA569 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = 7222F00B2D60B3DD00EBA569;
+					};
+				};
+			};
+			buildConfigurationList = 7222EFD62D60B37700EBA569 /* Build configuration list for PBXProject "TreeHacks25App" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 7222EFD22D60B37700EBA569;
+			packageReferences = (
+				7222F03A2D60B4B900EBA569 /* XCRemoteSwiftPackageReference "TerraRTiOS" */,
+				7222F03D2D60B64500EBA569 /* XCRemoteSwiftPackageReference "TerraiOS" */,
+			);
+			productRefGroup = 7222EFDC2D60B37700EBA569 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7222EFDA2D60B37700EBA569 /* TreeHacks25App */,
+				7222EFEA2D60B37A00EBA569 /* TreeHacks25AppTests */,
+				7222EFF42D60B37B00EBA569 /* TreeHacks25AppUITests */,
+				7222F00B2D60B3DD00EBA569 /* WatchAppCompanion Watch App */,
+				7222F01A2D60B3E500EBA569 /* WatchAppCompanion Watch AppTests */,
+				7222F0242D60B3E600EBA569 /* WatchAppCompanion Watch AppUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		7222EFD92D60B37700EBA569 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7222EFE62D60B37A00EBA569 /* Preview Assets.xcassets in Resources */,
+				7222EFE32D60B37A00EBA569 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222EFE92D60B37A00EBA569 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222EFF32D60B37B00EBA569 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222F00A2D60B3DD00EBA569 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7222F0162D60B3E400EBA569 /* Preview Assets.xcassets in Resources */,
+				7222F0132D60B3E400EBA569 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222F0192D60B3E500EBA569 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222F0232D60B3E600EBA569 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7222EFD72D60B37700EBA569 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7222EFE12D60B37700EBA569 /* ContentView.swift in Sources */,
+				7222EFDF2D60B37700EBA569 /* TreeHacks25AppApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222EFE72D60B37A00EBA569 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7222EFF02D60B37B00EBA569 /* TreeHacks25AppTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222EFF12D60B37B00EBA569 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7222EFFC2D60B37B00EBA569 /* TreeHacks25AppUITestsLaunchTests.swift in Sources */,
+				7222EFFA2D60B37B00EBA569 /* TreeHacks25AppUITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222F0082D60B3DD00EBA569 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7222F0112D60B3DE00EBA569 /* ContentView.swift in Sources */,
+				7222F00F2D60B3DE00EBA569 /* WatchAppCompanionApp.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222F0172D60B3E500EBA569 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7222F0202D60B3E500EBA569 /* WatchAppCompanion_Watch_AppTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7222F0212D60B3E600EBA569 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7222F02A2D60B3E600EBA569 /* WatchAppCompanion_Watch_AppUITests.swift in Sources */,
+				7222F02C2D60B3E600EBA569 /* WatchAppCompanion_Watch_AppUITestsLaunchTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7222EFED2D60B37A00EBA569 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7222EFDA2D60B37700EBA569 /* TreeHacks25App */;
+			targetProxy = 7222EFEC2D60B37A00EBA569 /* PBXContainerItemProxy */;
+		};
+		7222EFF72D60B37B00EBA569 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7222EFDA2D60B37700EBA569 /* TreeHacks25App */;
+			targetProxy = 7222EFF62D60B37B00EBA569 /* PBXContainerItemProxy */;
+		};
+		7222F01D2D60B3E500EBA569 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7222F00B2D60B3DD00EBA569 /* WatchAppCompanion Watch App */;
+			targetProxy = 7222F01C2D60B3E500EBA569 /* PBXContainerItemProxy */;
+		};
+		7222F0272D60B3E600EBA569 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7222F00B2D60B3DD00EBA569 /* WatchAppCompanion Watch App */;
+			targetProxy = 7222F0262D60B3E600EBA569 /* PBXContainerItemProxy */;
+		};
+		7222F02E2D60B3E600EBA569 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7222F00B2D60B3DD00EBA569 /* WatchAppCompanion Watch App */;
+			targetProxy = 7222F02D2D60B3E600EBA569 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		7222EFFD2D60B37B00EBA569 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		7222EFFE2D60B37B00EBA569 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7222F0002D60B37B00EBA569 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TreeHacks25App/TreeHacks25App.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"TreeHacks25App/Preview Content\"";
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TreeHacks25App/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need to save your workout and health data";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to your health data to track your heart rate and steps";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need access to your health data to track your heart rate and steps";
+				INFOPLIST_KEY_NSMotionUsageDescription = "";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25App;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		7222F0012D60B37B00EBA569 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = TreeHacks25App/TreeHacks25App.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"TreeHacks25App/Preview Content\"";
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = TreeHacks25App/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need to save your workout and health data";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to your health data to track your heart rate and steps";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need access to your health data to track your heart rate and steps";
+				INFOPLIST_KEY_NSMotionUsageDescription = "";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25App;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		7222F0032D60B37B00EBA569 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25AppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TreeHacks25App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TreeHacks25App";
+			};
+			name = Debug;
+		};
+		7222F0042D60B37B00EBA569 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25AppTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/TreeHacks25App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/TreeHacks25App";
+			};
+			name = Release;
+		};
+		7222F0062D60B37B00EBA569 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25AppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = TreeHacks25App;
+			};
+			name = Debug;
+		};
+		7222F0072D60B37B00EBA569 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25AppUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = TreeHacks25App;
+			};
+			name = Release;
+		};
+		7222F0312D60B3E800EBA569 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "WatchAppCompanion Watch App/WatchAppCompanion Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"WatchAppCompanion Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "WatchAppCompanion-Watch-App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WatchAppCompanion;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need to read your workout and health data";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to your health data to track your heart rate and steps";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need to save your workout and health data";
+				INFOPLIST_KEY_NSMotionUsageDescription = "This app needs access to motion data to analyze your movements and provide accurate fitness tracking.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = llanoopc.TreeHacks25App;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25App.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Debug;
+		};
+		7222F0322D60B3E800EBA569 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "WatchAppCompanion Watch App/WatchAppCompanion Watch App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"WatchAppCompanion Watch App/Preview Content\"";
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "WatchAppCompanion-Watch-App-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = WatchAppCompanion;
+				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need to read your workout and health data";
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to your health data to track your heart rate and steps";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need to save your workout and health data";
+				INFOPLIST_KEY_NSMotionUsageDescription = "This app needs access to motion data to analyze your movements and provide accurate fitness tracking.";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = llanoopc.TreeHacks25App;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25App.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Release;
+		};
+		7222F0352D60B3E800EBA569 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "llanoopc.WatchAppCompanion-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WatchAppCompanion Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WatchAppCompanion Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Debug;
+		};
+		7222F0362D60B3E800EBA569 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "llanoopc.WatchAppCompanion-Watch-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/WatchAppCompanion Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/WatchAppCompanion Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Release;
+		};
+		7222F0382D60B3E800EBA569 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "llanoopc.WatchAppCompanion-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "WatchAppCompanion Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Debug;
+		};
+		7222F0392D60B3E800EBA569 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "llanoopc.WatchAppCompanion-Watch-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				TEST_TARGET_NAME = "WatchAppCompanion Watch App";
+				WATCHOS_DEPLOYMENT_TARGET = 9.4;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7222EFD62D60B37700EBA569 /* Build configuration list for PBXProject "TreeHacks25App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7222EFFD2D60B37B00EBA569 /* Debug */,
+				7222EFFE2D60B37B00EBA569 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7222EFFF2D60B37B00EBA569 /* Build configuration list for PBXNativeTarget "TreeHacks25App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7222F0002D60B37B00EBA569 /* Debug */,
+				7222F0012D60B37B00EBA569 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7222F0022D60B37B00EBA569 /* Build configuration list for PBXNativeTarget "TreeHacks25AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7222F0032D60B37B00EBA569 /* Debug */,
+				7222F0042D60B37B00EBA569 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7222F0052D60B37B00EBA569 /* Build configuration list for PBXNativeTarget "TreeHacks25AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7222F0062D60B37B00EBA569 /* Debug */,
+				7222F0072D60B37B00EBA569 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7222F0302D60B3E800EBA569 /* Build configuration list for PBXNativeTarget "WatchAppCompanion Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7222F0312D60B3E800EBA569 /* Debug */,
+				7222F0322D60B3E800EBA569 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7222F0342D60B3E800EBA569 /* Build configuration list for PBXNativeTarget "WatchAppCompanion Watch AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7222F0352D60B3E800EBA569 /* Debug */,
+				7222F0362D60B3E800EBA569 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7222F0372D60B3E800EBA569 /* Build configuration list for PBXNativeTarget "WatchAppCompanion Watch AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7222F0382D60B3E800EBA569 /* Debug */,
+				7222F0392D60B3E800EBA569 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		7222F03A2D60B4B900EBA569 /* XCRemoteSwiftPackageReference "TerraRTiOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tryterra/TerraRTiOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.8;
+			};
+		};
+		7222F03D2D60B64500EBA569 /* XCRemoteSwiftPackageReference "TerraiOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/tryterra/TerraiOS";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7222F03B2D60B4B900EBA569 /* TerraRTiOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7222F03A2D60B4B900EBA569 /* XCRemoteSwiftPackageReference "TerraRTiOS" */;
+			productName = TerraRTiOS;
+		};
+		7222F03E2D60B64500EBA569 /* TerraiOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7222F03D2D60B64500EBA569 /* XCRemoteSwiftPackageReference "TerraiOS" */;
+			productName = TerraiOS;
+		};
+		7222F0412D60C69300EBA569 /* TerraRTiOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 7222F03A2D60B4B900EBA569 /* XCRemoteSwiftPackageReference "TerraRTiOS" */;
+			productName = TerraRTiOS;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 7222EFD32D60B37700EBA569 /* Project object */;
+}
