@@ -154,7 +154,7 @@ def text_to_speech(text: str) -> Optional[str]:
 
 
 @app.route("/assessment", methods=["POST"])
-def chat() -> tuple[Response, int]:
+def assessment() -> tuple[Response, int]:
     # ==============================================
     #  MODEL HERE
     # ==============================================
@@ -280,6 +280,67 @@ def chat() -> tuple[Response, int]:
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/chat", methods=["POST"])
+def chat() -> tuple[Response, int]:
+    data = request.get_json()
+
+    # Validate input format
+    if "question" not in data:
+        return jsonify({"error": "Question is required"}), 400
+
+    user_question = data['question']
+    conv_chain = data['conversation-chain']
+    chat_history = data['chat-history']
+
+    headers = {
+        "Authorization": f"Bearer {MISTRAL_API_KEY}",
+        "Content-Type": "application/json",
+    }
+
+    # convert to JSON object to string
+    conv_chain = json.dumps(conv_chain, indent=2)
+    chat_history = json.dumps(chat_history, indent=2)
+
+    payload = {
+        "model": "mistral-small-latest",
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are a helpful medical assistant. Use the provided conversation chain for context, but focus on giving direct and relevant responses to the user's questions."
+            },
+            {
+                "role": "user",
+                "content": f"""
+                Reference Information:
+                {conv_chain}
+
+                Conversation Chain:
+                {chat_history}
+
+                Current Question: {user_question}
+
+                Please provide a helpful response to the current question, using the reference information and conversation history as context.
+                """
+            }
+        ],
+        "temperature": 0.7,
+        "max_tokens": 300,
+        "top_p": 1,
+        "frequency_penalty": 0,
+        "presence_penalty": 0,
+    }
+
+    response = requests.post(MISTRAL_API_URL, headers=headers, json=payload)
+    print(response)
+    response_data = response.json()
+
+    if "choices" in response_data and len(response_data["choices"]) > 0:
+        bot_response = response_data["choices"][0]["message"]["content"]
+        return jsonify({"response": bot_response}), 200
+    else:
+        return jsonify({"error": "Failed to get a response from Mistral"}), 500
 
 
 if __name__ == "__main__":
