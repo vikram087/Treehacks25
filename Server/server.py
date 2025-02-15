@@ -3,10 +3,13 @@ import os
 import uuid
 
 import chromadb
+import google.generativeai as genai
 import requests
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
+from typing import Optional
+
 
 app = Flask(__name__)
 CORS(app)
@@ -16,8 +19,8 @@ load_dotenv("./.env")
 CHROMA_API_KEY = os.getenv("CHROMA_API_KEY")
 CHROMA_TENANT = os.getenv("CHROMA_TENANT")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
-
 
 chroma_client = chromadb.HttpClient(
     ssl=True,
@@ -33,7 +36,7 @@ def health() -> tuple[Response, int]:
     return jsonify({"message": "Success"}), 200
 
 
-def get_qa_analysis(qa: dict) -> str | None:
+def get_qa_analysis(qa: dict) -> Optional[str]:
     try:
         if len(qa) == 0:
             print("qa is length 0")
@@ -98,7 +101,7 @@ def upload() -> tuple[Response, int]:
             # dict ~ {bio_data: {...}, qa: {...}, summary: ...}
             patient_data: dict = doc.get("data", {})
             qa: dict = patient_data.get("qa", {})
-            summary: str | None = get_qa_analysis(qa)
+            summary: Optional[str] = get_qa_analysis(qa)
 
             if not patient_data:
                 return jsonify(
@@ -115,6 +118,97 @@ def upload() -> tuple[Response, int]:
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route('/assessment', methods=['POST'])
+def chat() -> tuple[Response, int]:
+
+    # ==============================================
+    #  MODEL HERE
+    # ==============================================
+    genai.configure(api_key=GEMINI_API_KEY)
+    model = genai.GenerativeModel('gemini-2.0-flash')
+
+    try:
+        # ==============================================
+        # QUESTIONS AND PROMPTS
+        # ==============================================
+        TOPICS = """
+        1. Mood and Emotions
+        2. Eating and Diet
+        3. Sleep and Fatigue
+        4. Exercise and Fitness
+        5. Relationships and Social Interaction
+        """
+
+        INSTRUCTIONS = f"""
+        You are a behavioral psychologist. You are to facilitate a conversation with the user
+        who likely has some form of bi-polar disorder. You are to ask them questions about the
+        following topics:
+
+        ----- TOPICS -----
+
+        {TOPICS}
+
+        ----- DIRECTIONS -----
+
+        To start the conversation (i.e. the history is empty), you should introduce yourself as 
+        an AI behavioral psychologist and ask the user to describe their current mood and emotions.
+
+        Then, in the conversation, you should act like a human and ask follow up questions on 
+        each theme you touch on. Do not exceed 2 follow up questions per theme. Once you feel
+        like you have enough information on a theme, you should move on to the next theme in
+        any order in the ----- TOPICS ----- section.
+
+        Once all topics in ----- TOPICS ----- have been covered, thank the user
+        for their time and directly end the conversation. No more follow up questions.
+        Add this marker to the end of the conversation: [CONVERSATION ENDED]
+        """
+
+        # ==============================================
+        # CONVERSATION
+        # ==============================================
+        data = request.get_json()
+        
+        # Validate input format
+        if not all(key in data for key in ['num', 'history', 'question']):
+            return jsonify({'error': 'Invalid input format'}), 400
+
+        # Format the conversation history
+        chat_history = data['history']
+        user_input = data['question']
+        
+        prompt = f"""
+        ----- INSTRUCTIONS -----
+
+        {INSTRUCTIONS}
+
+        ----- CURRENT CONVERSATION -----
+
+        history: {chat_history}
+        
+        user input: {user_input}
+
+        ----- TASK -----
+
+        Please response to the user according to the instructions and current conversation.
+        Give a short question response to the user as your sole output. Remember, only ask
+        up to 2 follow up questions per theme and end the conversation once all topics have been
+        covered.
+        """
+
+        # Generate response
+        response = model.generate_content(prompt)
+        
+        # Prepare response JSON
+        return jsonify({
+            'num': data['num'],
+            'history': chat_history,
+            'question': response.text
+        }), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == "__main__":

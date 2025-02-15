@@ -83,6 +83,8 @@ def adaptive_test():
         # Store the conversation
         chat_history.append({"role": "user", "text": user_input})
         chat_history.append({"role": "assistant", "text": response.text})
+
+        print(chat_history)
         
         # Print the response
         if "[CONVERSATION ENDED]" in response.text:
