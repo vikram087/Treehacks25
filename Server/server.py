@@ -1,6 +1,7 @@
 import json
 import os
 import uuid
+from typing import Optional
 
 import chromadb
 import google.generativeai as genai
@@ -8,8 +9,6 @@ import requests
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
-from typing import Optional
-
 
 app = Flask(__name__)
 CORS(app)
@@ -19,7 +18,7 @@ load_dotenv("./.env")
 CHROMA_API_KEY = os.getenv("CHROMA_API_KEY")
 CHROMA_TENANT = os.getenv("CHROMA_TENANT")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
 
 chroma_client = chromadb.HttpClient(
@@ -36,13 +35,16 @@ def health() -> tuple[Response, int]:
     return jsonify({"message": "Success"}), 200
 
 
-def get_qa_analysis(qa: dict) -> Optional[str]:
+def get_qa_analysis(qa: list[dict]) -> Optional[str]:
     try:
         if len(qa) == 0:
             print("qa is length 0")
             return None
 
-        conversation = "\n".join([f"Q: {q}\nA: {a}" for q, a in qa.items()])
+        conversation = ""
+        for convo in qa:
+            ques, ans = convo.items()
+            conversation += f"Q: {ques}\nA: {ans}\n"
 
         headers = {
             "Authorization": f"Bearer {MISTRAL_API_KEY}",
@@ -82,37 +84,23 @@ def get_qa_analysis(qa: dict) -> Optional[str]:
         return None
 
 
-@app.route("/api/upload-patient-data", methods=["POST"])
-def upload() -> tuple[Response, int]:
+def upload(history: list[dict], bio_data: dict, metadata=None) -> tuple[Response, int]:
     try:
-        data = request.get_json()
-        collection_name: str = data.get("collection_name", "patient_records")
-        documents: list[dict] = data.get("documents")
+        if not history or not bio_data:
+            return jsonify({"error": "history is required"}), 400
 
-        if not collection_name or not documents:
-            return jsonify({"error": "collection_name and documents are required"}), 400
+        collection = chroma_client.get_or_create_collection(name="patient_records")
 
-        collection = chroma_client.get_or_create_collection(name=collection_name)
+        document = {
+            "history": history,
+            "summary": get_qa_analysis(history),
+        }
 
-        for i, doc in enumerate(documents):
-            doc_id = f"{uuid.uuid4()}"
-            metadata: dict = doc.get("metadata", {})
-
-            # dict ~ {bio_data: {...}, qa: {...}, summary: ...}
-            patient_data: dict = doc.get("data", {})
-            qa: dict = patient_data.get("qa", {})
-            summary: Optional[str] = get_qa_analysis(qa)
-
-            if not patient_data:
-                return jsonify(
-                    {"error": f"Document {i} is missing 'patient_data'"}
-                ), 400
-
-            patient_data["summary"] = summary
-
-            collection.add(
-                ids=[doc_id], documents=[json.dumps(patient_data)], metadatas=[metadata]
-            )
+        collection.add(
+            ids=[f"{uuid.uuid4()}"],
+            documents=[json.dumps(document)],
+            metadatas=[metadata],
+        )
 
         return jsonify({"message": "Documents uploaded successfully"}), 201
 
@@ -120,14 +108,13 @@ def upload() -> tuple[Response, int]:
         return jsonify({"error": str(e)}), 500
 
 
-@app.route('/assessment', methods=['POST'])
+@app.route("/assessment", methods=["POST"])
 def chat() -> tuple[Response, int]:
-
     # ==============================================
     #  MODEL HERE
     # ==============================================
     genai.configure(api_key=GEMINI_API_KEY)
-    model = genai.GenerativeModel('gemini-2.0-flash')
+    model = genai.GenerativeModel("gemini-2.0-flash")
 
     try:
         # ==============================================
@@ -169,15 +156,15 @@ def chat() -> tuple[Response, int]:
         # CONVERSATION
         # ==============================================
         data = request.get_json()
-        
+
         # Validate input format
-        if not all(key in data for key in ['num', 'history', 'question']):
-            return jsonify({'error': 'Invalid input format'}), 400
+        if not all(key in data for key in ["num", "history", "question"]):
+            return jsonify({"error": "Invalid input format"}), 400
 
         # Format the conversation history
-        chat_history = data['history']
-        user_input = data['question']
-        
+        chat_history = data["history"]
+        user_input = data["question"]
+
         prompt = f"""
         ----- INSTRUCTIONS -----
 
@@ -199,16 +186,14 @@ def chat() -> tuple[Response, int]:
 
         # Generate response
         response = model.generate_content(prompt)
-        
+
         # Prepare response JSON
-        return jsonify({
-            'num': data['num'],
-            'history': chat_history,
-            'question': response.text
-        }), 200
+        return jsonify(
+            {"num": data["num"], "history": chat_history, "question": response.text}
+        ), 200
 
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":
