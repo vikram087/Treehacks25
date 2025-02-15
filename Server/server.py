@@ -1,6 +1,8 @@
+import base64
 import json
 import os
 import uuid
+from io import BytesIO
 from typing import Optional
 
 import chromadb
@@ -9,8 +11,6 @@ import requests
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
-from io import BytesIO
-import base64
 
 app = Flask(__name__)
 CORS(app)
@@ -23,7 +23,9 @@ MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
-ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM")  # default voice ID
+ELEVENLABS_VOICE_ID = os.getenv(
+    "ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM"
+)  # default voice ID
 
 chroma_client = chromadb.HttpClient(
     ssl=True,
@@ -47,8 +49,12 @@ def get_qa_analysis(qa: list[dict]) -> Optional[str]:
 
         conversation = ""
         for convo in qa:
-            ques, ans = convo.items()
-            conversation += f"Q: {ques}\nA: {ans}\n"
+            if not convo or not isinstance(convo, dict):
+                continue
+
+            question = convo.get("question", "")
+            answer = convo.get("answer", "")
+            conversation += f"Q: {question}\nA: {answer}\n"
 
         headers = {
             "Authorization": f"Bearer {MISTRAL_API_KEY}",
@@ -88,61 +94,60 @@ def get_qa_analysis(qa: list[dict]) -> Optional[str]:
         return None
 
 
-def upload(history: list[dict], bio_data: dict, metadata=None) -> tuple[Response, int]:
+def upload(history: list[dict], bio_data: dict, metadata=None) -> bool:
     try:
         if not history or not bio_data:
-            return jsonify({"error": "history is required"}), 400
+            return False
 
         collection = chroma_client.get_or_create_collection(name="patient_records")
 
         document = {
             "history": history,
             "summary": get_qa_analysis(history),
+            "bio-data": bio_data,
         }
 
         collection.add(
             ids=[f"{uuid.uuid4()}"],
             documents=[json.dumps(document)],
-            metadatas=[metadata],
+            metadatas=[metadata] if metadata is not None else None,
         )
 
-        return jsonify({"message": "Documents uploaded successfully"}), 201
+        return True
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        print("Failed to upload data", e)
+        return False
 
 
 def text_to_speech(text: str) -> Optional[str]:
     """Convert text to speech using 11labs API and return base64 encoded audio"""
     try:
         url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}"
-        
+
         headers = {
             "Accept": "audio/mpeg",
             "Content-Type": "application/json",
-            "xi-api-key": ELEVENLABS_API_KEY
+            "xi-api-key": ELEVENLABS_API_KEY,
         }
-        
+
         data = {
             "text": text,
             "model_id": "eleven_monolingual_v1",
-            "voice_settings": {
-                "stability": 0.5,
-                "similarity_boost": 0.5
-            }
+            "voice_settings": {"stability": 0.5, "similarity_boost": 0.5},
         }
-        
+
         response = requests.post(url, json=data, headers=headers)
-        
+
         if response.status_code == 200:
             # Convert audio bytes to base64 string
             audio_bytes = BytesIO(response.content)
-            base64_audio = base64.b64encode(audio_bytes.read()).decode('utf-8')
+            base64_audio = base64.b64encode(audio_bytes.read()).decode("utf-8")
             return base64_audio
         else:
             print(f"Error from ElevenLabs API: {response.status_code}")
             return None
-            
+
     except Exception as e:
         print(f"Error in text_to_speech: {str(e)}")
         return None
@@ -167,6 +172,9 @@ def chat() -> tuple[Response, int]:
         4. Exercise and Fitness
         5. Relationships and Social Interaction
         """
+        # TOPICS = """
+        # 1. Mood and Emotions
+        # """
 
         INSTRUCTIONS = f"""
         You are a behavioral psychologist. You are to facilitate a conversation with the user
@@ -198,19 +206,38 @@ def chat() -> tuple[Response, int]:
         data = request.get_json()
 
         # Validate input format
-        if not all(key in data for key in ["num", "history", "question"]):
+        if not all(
+            key in data
+            for key in [
+                "num",
+                "history",
+                "question",
+                "bio-data",
+                "end",
+                "question_text",
+            ]
+        ):
             return jsonify({"error": "Invalid input format"}), 400
 
         # Format the conversation history
-        chat_history = data['history']
-        user_input = data['question']
-        end = data['end']
+        chat_history = data["history"]
+        user_input = data["question"]
+        end = data["end"]
 
         # If conversation is ended, upload to database
-        if end:
-            upload(chat_history, data['bio-data'])
-            return
-        
+        if end or data["num"] >= 16:
+            upload(chat_history, data["bio-data"])
+            return jsonify(
+                {
+                    "num": data["num"],
+                    "history": chat_history,
+                    "question_text": None,
+                    "question": None,
+                    "end": True,
+                    "bio-data": data["bio-data"],
+                }
+            ), 200
+
         prompt = f"""
         ----- INSTRUCTIONS -----
 
@@ -232,20 +259,24 @@ def chat() -> tuple[Response, int]:
 
         # Generate response
         response = model.generate_content(prompt)
-        
+
         # Convert text to speech
         audio_base64 = text_to_speech(response.text)
-        
+        # audio_base64 = "TIOWEHFogih3wogwrehgo9ughw3roiughqewrp"
+
         if audio_base64 is None:
             return jsonify({"error": "Failed to generate audio"}), 500
 
-        return jsonify({
-            'num': data['num'],
-            'history': chat_history,
-            'question': audio_base64,
-            'end': end,
-            'bio-data': data['bio-data']
-        }), 200
+        return jsonify(
+            {
+                "num": data["num"],
+                "history": chat_history,
+                "question": audio_base64,
+                "question_text": response.text,
+                "end": end,
+                "bio-data": data["bio-data"],
+            }
+        ), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
