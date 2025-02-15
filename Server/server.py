@@ -9,6 +9,8 @@ import requests
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
+from io import BytesIO
+import base64
 
 app = Flask(__name__)
 CORS(app)
@@ -20,6 +22,8 @@ CHROMA_TENANT = os.getenv("CHROMA_TENANT")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
+ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
+ELEVENLABS_VOICE_ID = os.getenv("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM")  # default voice ID
 
 chroma_client = chromadb.HttpClient(
     ssl=True,
@@ -108,6 +112,42 @@ def upload(history: list[dict], bio_data: dict, metadata=None) -> tuple[Response
         return jsonify({"error": str(e)}), 500
 
 
+def text_to_speech(text: str) -> Optional[str]:
+    """Convert text to speech using 11labs API and return base64 encoded audio"""
+    try:
+        url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}"
+        
+        headers = {
+            "Accept": "audio/mpeg",
+            "Content-Type": "application/json",
+            "xi-api-key": ELEVENLABS_API_KEY
+        }
+        
+        data = {
+            "text": text,
+            "model_id": "eleven_monolingual_v1",
+            "voice_settings": {
+                "stability": 0.5,
+                "similarity_boost": 0.5
+            }
+        }
+        
+        response = requests.post(url, json=data, headers=headers)
+        
+        if response.status_code == 200:
+            # Convert audio bytes to base64 string
+            audio_bytes = BytesIO(response.content)
+            base64_audio = base64.b64encode(audio_bytes.read()).decode('utf-8')
+            return base64_audio
+        else:
+            print(f"Error from ElevenLabs API: {response.status_code}")
+            return None
+            
+    except Exception as e:
+        print(f"Error in text_to_speech: {str(e)}")
+        return None
+
+
 @app.route("/assessment", methods=["POST"])
 def chat() -> tuple[Response, int]:
     # ==============================================
@@ -162,9 +202,15 @@ def chat() -> tuple[Response, int]:
             return jsonify({"error": "Invalid input format"}), 400
 
         # Format the conversation history
-        chat_history = data["history"]
-        user_input = data["question"]
+        chat_history = data['history']
+        user_input = data['question']
+        end = data['end']
 
+        # If conversation is ended, upload to database
+        if end:
+            upload(chat_history, data['bio-data'])
+            return
+        
         prompt = f"""
         ----- INSTRUCTIONS -----
 
@@ -186,11 +232,20 @@ def chat() -> tuple[Response, int]:
 
         # Generate response
         response = model.generate_content(prompt)
+        
+        # Convert text to speech
+        audio_base64 = text_to_speech(response.text)
+        
+        if audio_base64 is None:
+            return jsonify({"error": "Failed to generate audio"}), 500
 
-        # Prepare response JSON
-        return jsonify(
-            {"num": data["num"], "history": chat_history, "question": response.text}
-        ), 200
+        return jsonify({
+            'num': data['num'],
+            'history': chat_history,
+            'question': audio_base64,
+            'end': end,
+            'bio-data': data['bio-data']
+        }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
