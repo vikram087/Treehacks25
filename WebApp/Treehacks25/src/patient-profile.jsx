@@ -22,6 +22,7 @@ function PatientProfile() {
 	const [hrvValues, setHrv] = useState({});
 	const [aValues, setA] = useState({});
 	const [loading, setLoading] = useState(false);
+	const [crisisPlan, setCrisisPlan] = useState(null);
 	const { id } = useParams();
 	const navigate = useNavigate();
 
@@ -212,6 +213,19 @@ function PatientProfile() {
 					cals: caloriesValues,
 					steps: stepsValues,
 				});
+
+				const crisisRes = await fetch(
+					`${import.meta.env.VITE_BACKEND_URL}/api/generate-crisis-plan`, {
+						method: "POST",
+						headers: {"Content-Type": "application/json"},
+						body: JSON.stringify({biometric_data: data.data, behavioral_summary: data.data.patient_records})
+					}
+				);
+				const crisisData = await crisisRes.json();
+   
+				if (crisisData.success) {
+					setCrisisPlan(crisisData.crisis_plan);
+				}
 			} catch (error) {
 				console.error(error);
 			} finally {
@@ -322,64 +336,113 @@ function PatientProfile() {
 					<div className="grid gap-6 grid-cols-1 md:grid-cols-2 mb-6">
 						<PatientRecords patientData={patientData} />
 
-						<div className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-100">
-							<div className="p-6 h-full grid grid-rows-[auto_1fr_auto]">
-								<div className="flex items-center justify-between mb-6">
-									<div className="flex items-center space-x-3">
-										<div className="p-2 bg-green-50 rounded-lg">
-											<Activity className="text-green-600" size={24} />
-										</div>
-										<h3 className="text-lg font-semibold text-gray-900">
-											Recent Health Metrics
-										</h3>
-									</div>
+						<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+							<h3 className="text-lg font-semibold text-gray-900 mb-4">
+								AI Recommended Crisis Plan
+							</h3>
+
+
+							{!crisisPlan ? (
+								<p className="text-sm text-red-500">
+									Crisis plan data not found. Check console logs.
+								</p>
+							) : (
+								<div className="space-y-4 p-4 bg-gray-50 rounded-lg max-h-[400px] overflow-y-auto">
+									{/* Current State Analysis */}
+									<p className="font-medium text-gray-900">Classification:</p>
+									<p className="text-sm text-gray-600">{crisisPlan.current_state_analysis?.classification || "N/A"}</p>
+
+
+									<p className="font-medium text-gray-900">Confidence Level:</p>
+									<p className="text-sm text-gray-600">{crisisPlan.current_state_analysis?.confidence_level || "N/A"}%</p>
+
+
+									<p className="font-medium text-gray-900">Additional Data Needed:</p>
+									<p className="text-sm text-gray-600">{crisisPlan.current_state_analysis?.additional_data_needed || "N/A"}</p>
+
+
+									{/* Therapist Actions */}
+									<p className="font-medium text-gray-900">Therapist Actions:</p>
+									<ul className="list-disc list-inside text-sm text-gray-600">
+										{Array.isArray(crisisPlan.intervention_suggestions?.therapist_actions) ? (
+											crisisPlan.intervention_suggestions.therapist_actions.length > 0 ? (
+												crisisPlan.intervention_suggestions.therapist_actions.map((action, index) => (
+													<li key={index}>{action}</li>
+												))
+											) : (
+												<li>N/A</li>
+											)
+										) : (
+											<li></li>
+										)}
+									</ul>
+
+
+									{/* Coping Mechanisms */}
+									<p className="font-medium text-gray-900">Coping Mechanisms:</p>
+									<ul className="list-disc list-inside text-sm text-gray-600">
+										{Array.isArray(crisisPlan.intervention_suggestions?.coping_mechanisms) ? (
+											crisisPlan.intervention_suggestions.coping_mechanisms.length > 0 ? (
+												crisisPlan.intervention_suggestions.coping_mechanisms.map((mechanism, index) => (
+													<li key={index}>{mechanism}</li>
+												))
+											) : (
+												<li>N/A</li>
+											)
+										) : (
+											<li></li>
+										)}
+									</ul>
+
+
+									{/* Monitoring Strategies */}
+									<p className="font-medium text-gray-900">Monitoring Strategies:</p>
+									<ul className="list-disc list-inside text-sm text-gray-600">
+										{Array.isArray(crisisPlan.intervention_suggestions?.monitoring_strategies) ? (
+											crisisPlan.intervention_suggestions.monitoring_strategies.length > 0 ? (
+												crisisPlan.intervention_suggestions.monitoring_strategies.map((strategy, index) => (
+													<li key={index}>{strategy}</li>
+												))
+											) : (
+												<li>N/A</li>
+											)
+										) : (
+											<li></li>
+										)}
+									</ul>
+
+
+
+
+									{/* AI-Generated Crisis Plan */}
+									<p className="font-medium text-gray-900">Medication Review:</p>
+									<p className="text-sm text-gray-600">{crisisPlan.ai_generated_crisis_plan?.medication_review || "N/A"}</p>
+
+
+									<p className="font-medium text-gray-900">Physical Activity Recommendation:</p>
+									<p className="text-sm text-gray-600">{crisisPlan.ai_generated_crisis_plan?.physical_activity || "N/A"}</p>
+
+
+									<p className="font-medium text-gray-900">Sleep Adjustments:</p>
+									<p className="text-sm text-gray-600">{crisisPlan.ai_generated_crisis_plan?.sleep_adjustments || "N/A"}</p>
+
+
+									<p className="font-medium text-gray-900">Social Engagement Recommendation:</p>
+									<p className="text-sm text-gray-600">{crisisPlan.ai_generated_crisis_plan?.social_engagement || "N/A"}</p>
+
+
+									{/* Risk Alerts */}
+									<p className="font-medium text-gray-900">Risk Alerts:</p>
+									<ul className="list-disc list-inside text-sm text-red-600">
+										{Array.isArray(crisisPlan.ai_generated_crisis_plan?.risk_alerts) && crisisPlan.ai_generated_crisis_plan.risk_alerts.length > 0
+											? crisisPlan.ai_generated_crisis_plan.risk_alerts.map((alert, index) => (
+												<li key={index}>{alert}</li>
+											))
+											: <li>No risk alerts.</li>}
+									</ul>
 								</div>
-								<div className="space-y-4">
-									<div className="p-4 bg-gray-50 rounded-lg">
-										<div className="flex items-center justify-between mb-2">
-											<p className="font-medium text-gray-900">Anxiety Level</p>
-											<div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-												<div className="w-1/2 h-full bg-amber-500"></div>
-											</div>
-										</div>
-										<div className="flex justify-between items-center">
-											<p className="text-sm text-gray-600">Moderate</p>
-										</div>
-									</div>
-									<div className="p-4 bg-gray-50 rounded-lg">
-										<div className="flex items-center justify-between mb-2">
-											<p className="font-medium text-gray-900">
-												Depression Scale
-											</p>
-											<div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-												<div className="w-1/4 h-full bg-green-500"></div>
-											</div>
-										</div>
-										<div className="flex justify-between items-center">
-											<p className="text-sm text-gray-600">Low</p>
-										</div>
-									</div>
-									<div className="p-4 bg-gray-50 rounded-lg">
-										<div className="flex items-center justify-between mb-2">
-											<p className="font-medium text-gray-900">Sleep Quality</p>
-											<div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-												<div className="w-3/4 h-full bg-blue-500"></div>
-											</div>
-										</div>
-										<div className="flex justify-between items-center">
-											<p className="text-sm text-gray-600">Good</p>
-										</div>
-									</div>
-								</div>
-								<button
-									type="button"
-									className="w-full flex items-center justify-between px-4 py-2 bg-gradient-to-r from-green-600 to-green-500 text-white rounded-lg hover:from-green-700 hover:to-green-600 transition-colors mt-6"
-								>
-									<span>View Detailed Metrics</span>
-									<ChevronRight size={20} />
-								</button>
+							)}
 							</div>
-						</div>
 					</div>
 
 					<BiometricGraph graphDataSets={chartData} />

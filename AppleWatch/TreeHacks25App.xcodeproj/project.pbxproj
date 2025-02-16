@@ -709,7 +709,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"TreeHacks25App/Preview Content\"";
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TreeHacks25App/Info.plist;
@@ -746,7 +746,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"TreeHacks25App/Preview Content\"";
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = TreeHacks25App/Info.plist;
@@ -780,7 +780,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MARKETING_VERSION = 1.0;
@@ -800,7 +800,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MARKETING_VERSION = 1.0;
@@ -819,7 +819,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = mli.TreeHacks25AppUITests;
@@ -837,7 +837,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = mli.TreeHacks25AppUITests;
@@ -858,7 +858,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchAppCompanion Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "WatchAppCompanion-Watch-App-Info.plist";
@@ -866,6 +866,7 @@
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need to read your workout and health data";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to your health data to track your heart rate and steps";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need to save your workout and health data";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone access is needed for recording responses";
 				INFOPLIST_KEY_NSMotionUsageDescription = "This app needs access to motion data to analyze your movements and provide accurate fitness tracking.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = llanoopc.TreeHacks25App;
@@ -894,7 +895,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"WatchAppCompanion Watch App/Preview Content\"";
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "WatchAppCompanion-Watch-App-Info.plist";
@@ -902,6 +903,7 @@
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need to read your workout and health data";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to your health data to track your heart rate and steps";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need to save your workout and health data";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Microphone access is needed for recording responses";
 				INFOPLIST_KEY_NSMotionUsageDescription = "This app needs access to motion data to analyze your movements and provide accurate fitness tracking.";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = llanoopc.TreeHacks25App;
@@ -928,7 +930,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "mli.WatchAppCompanion-Watch-AppTests";
@@ -949,7 +951,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "mli.WatchAppCompanion-Watch-AppTests";
@@ -969,8 +971,9 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "mli.WatchAppCompanion-Watch-AppUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -989,8 +992,9 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = RDYDWP5W98;
+				DEVELOPMENT_TEAM = 3YZ68KUMHG;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "mli.WatchAppCompanion-Watch-AppUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -1,0 +1,18 @@
+{
+    "history": [
+        {
+            "answer": "Hello. Currently, I'm feeling stable, neither extremely high nor low. I'd describe my mood as neutral, but a bit anxious.",
+            "question": "Hello, I'm an AI behavioral psychologist. To start, could you describe your current mood and emotions?"
+        },
+        {
+            "answer": "I've been feeling anxious about an upcoming deadline at work. It's been on my mind a lot.",
+            "question": "Okay, that's helpful to know. Since you mentioned feeling a bit anxious, could you tell me if there's anything specific that's causing you to feel that way?"
+        }
+    ],
+    "summary": "<p>The patient reports feeling stable overall, with a neutral mood but some anxiety. The anxiety is attributed to an upcoming work deadline, which has been occupying the patient's thoughts.</p>",
+    "bio-data": {
+        "heart_rate": 85,
+        "steps": 3200
+    },
+    "timestamp": "2025-02-15T17:50:46.763426"
+}

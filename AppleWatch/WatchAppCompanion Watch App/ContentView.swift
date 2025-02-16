@@ -7,51 +7,325 @@
 
 import SwiftUI
 import TerraRTiOS
+import AVFoundation
 
 struct WatchView: View {
     @State private var terraRT: Terra?
     @State private var isStreaming = false
     @State private var isWorkout = false
-    @StateObject private var biomarkerMonitor = BiomarkerMonitor(userName: "steve", userEmail: "steve@aol.com")
+    @StateObject private var biomarkerMonitor = BiomarkerMonitor(userName: "John Doe", userEmail: "jodoe@gmail.com")
+    @State private var audioPlayer: AVAudioPlayer?
     
-    var body: some View {
-        VStack {
-            Text(isStreaming ? "Streaming Data..." : "Ready to Stream")
-                .padding()
-            
-            // Display current HRV and heart rate
-            Text("Current HRV: \(biomarkerMonitor.currentHRV, specifier: "%.1f")")
-                .padding()
-            
-            Text("Heart Rate: \(biomarkerMonitor.lastHeartRate, specifier: "%.0f") BPM")
-                .padding()
-            
-            Text("Agitation Score: \(biomarkerMonitor.currentAgitation, specifier: "%.1f")")
-                .padding()
-            
-            Button(action: {
-                if isStreaming {
-                    stopStreaming()
-                } else {
-                    startStreaming()
-                }
-            }) {
-                Text(isStreaming ? "Stop Streaming" : "Start Streaming")
-                    .padding()
-            }
+    // Recording states
+    @State private var isRecording = false
+    @State private var audioRecorder: AVAudioRecorder?
+    @State private var recordingURL: URL?
+    @State private var conversationNum = 0
+    @State private var conversationHistory: [[String: String]] = []
+    @State private var isLoading = false // New loading state
 
-            if isWorkout {
-                Text("Workout Active")
-                    .foregroundColor(.green)
+    var body: some View {
+        if biomarkerMonitor.isCriticalState {
+            // Conversation View
+            VStack(spacing: 12) {
+                Text("AI Therapist")
+                    .font(.headline)
+                
+                if isLoading {
+                    // Loading Animation
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .scaleEffect(1.5)
+                        .padding(.vertical, 20)
+                } else {
+                    // Regular Content
+                    Text(biomarkerMonitor.therapistMessage)
+                        .font(.body)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    
+                    if audioPlayer != nil {
+                        Button(action: playTherapistMessage) {
+                            Image(systemName: "play.circle.fill")
+                                .font(.title)
+                                .foregroundColor(.blue)
+                        }
+                    }
+                    
+                    // Record Button
+                    Button(action: toggleRecording) {
+                        Image(systemName: isRecording ? "stop.circle.fill" : "mic.circle.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(isRecording ? .red : .blue)
+                    }
+                    .padding()
+                }
+                
+                Button(action: {
+                    withAnimation {
+                        biomarkerMonitor.isCriticalState = false
+                        audioPlayer?.stop()
+                        audioPlayer = nil
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: "arrow.left")
+                        
+                    }
+                    .padding(.vertical, 8)
+                }
             }
-        }
-        .onAppear {
-            initializeTerra()
-            calculateMetrics()
+            .padding()
+            .transition(.opacity)
+        } else {
+            // Biometrics View
+            VStack(spacing: 8) {
+                // Status text with dot indicator
+                HStack {
+                    Circle()
+                        .fill(isStreaming ? Color.green : Color.red)
+                        .frame(width: 6, height: 6)
+                    Text(isStreaming ? "Streaming Data..." : "Ready to Stream")
+                        .font(.footnote)
+                }
+                .padding(.vertical, 4)
+                
+                // Biometrics display
+                VStack(spacing: 12) {
+                    // HRV
+                    HStack {
+                        Image(systemName: "waveform.path.ecg")
+                            .foregroundColor(.blue)
+                        Text("HRV:")
+                            .font(.footnote)
+                        Text("\(biomarkerMonitor.currentHRV, specifier: "%.1f")")
+                            .font(.system(.body, design: .rounded))
+                            .bold()
+                    }
+                    
+                    // Heart Rate
+                    HStack {
+                        Image(systemName: "heart.fill")
+                            .foregroundColor(.red)
+                        Text("\(biomarkerMonitor.lastHeartRate, specifier: "%.0f")")
+                            .font(.system(.title2, design: .rounded))
+                            .bold()
+                        Text("BPM")
+                            .font(.footnote)
+                    }
+                    
+                    // Agitation Score
+                    HStack {
+                        Image(systemName: "hand.raised.fill")
+                            .foregroundColor(.orange)
+                        Text("Agitation:")
+                            .font(.footnote)
+                        Text("\(biomarkerMonitor.currentAgitation, specifier: "%.1f")")
+                            .font(.system(.body, design: .rounded))
+                            .bold()
+                    }
+                }
+                .padding(.vertical, 4)
+                
+                // Control button
+                Button(action: {
+                    if isStreaming {
+                        stopStreaming()
+                    } else {
+                        startStreaming()
+                    }
+                }) {
+                    Text(isStreaming ? "Stop Streaming" : "Start Streaming")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .cornerRadius(8)
+                }
+            }
+            .padding(.horizontal)
+            .transition(.opacity)
+            .onAppear {
+                initializeTerra()
+                calculateMetrics()
+                setupCriticalStateHandler()
+            }
         }
     }
     
-
+    // MARK: - Recording Functions
+    private func toggleRecording() {
+        if isRecording {
+            stopRecording()
+        } else {
+            startRecording()
+        }
+    }
+    
+    private func startRecording() {
+        let audioSession = AVAudioSession.sharedInstance()
+        
+        do {
+            try audioSession.setCategory(.playAndRecord, mode: .default)
+            try audioSession.setActive(true)
+            
+            let documentsPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let audioFilename = documentsPath.appendingPathComponent("recording.wav")
+            recordingURL = audioFilename
+            
+            let settings = [
+                AVFormatIDKey: Int(kAudioFormatLinearPCM),
+                AVSampleRateKey: 16000,
+                AVNumberOfChannelsKey: 1,
+                AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+            ]
+            
+            audioRecorder = try AVAudioRecorder(url: audioFilename, settings: settings)
+            audioRecorder?.record()
+            isRecording = true
+            
+        } catch {
+            print("Recording failed: \(error)")
+        }
+    }
+    
+    private func stopRecording() {
+        audioRecorder?.stop()
+        isRecording = false
+        
+        // Send the recording to server
+        if let url = recordingURL {
+            sendRecordingToServer(fileURL: url)
+        }
+    }
+    
+    private func sendRecordingToServer(fileURL: URL) {
+        // Start loading state
+        isLoading = true
+        
+        print("Starting to send recording...")
+        
+        let boundary = UUID().uuidString
+        var request = URLRequest(url: URL(string: "\(biomarkerMonitor.baseURL)assessment")!)
+        request.httpMethod = "POST"
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        
+        var data = Data()
+        // Add form fields
+        let metadata = ["name": biomarkerMonitor.userName, "email": biomarkerMonitor.userEmail]
+        print("Sending metadata:", metadata)
+        
+        // Add metadata
+        data.append("--\(boundary)\r\n".data(using: .utf8)!)
+        data.append("Content-Disposition: form-data; name=\"metadata\"\r\n\r\n".data(using: .utf8)!)
+        data.append("\(String(data: try! JSONEncoder().encode(metadata), encoding: .utf8)!)\r\n".data(using: .utf8)!)
+        
+        // Add conversation data
+        data.append("--\(boundary)\r\n".data(using: .utf8)!)
+        data.append("Content-Disposition: form-data; name=\"num\"\r\n\r\n".data(using: .utf8)!)
+        data.append("\(conversationNum)\r\n".data(using: .utf8)!)
+        
+        data.append("--\(boundary)\r\n".data(using: .utf8)!)
+        data.append("Content-Disposition: form-data; name=\"history\"\r\n\r\n".data(using: .utf8)!)
+        data.append("\(String(data: try! JSONEncoder().encode(conversationHistory), encoding: .utf8)!)\r\n".data(using: .utf8)!)
+        
+        data.append("--\(boundary)\r\n".data(using: .utf8)!)
+        data.append("Content-Disposition: form-data; name=\"question_text\"\r\n\r\n".data(using: .utf8)!)
+        data.append("\(biomarkerMonitor.therapistMessage)\r\n".data(using: .utf8)!)
+        
+        // Add audio file
+        if let audioData = try? Data(contentsOf: fileURL) {
+            print("Adding audio file, size:", audioData.count)
+            data.append("--\(boundary)\r\n".data(using: .utf8)!)
+            data.append("Content-Disposition: form-data; name=\"answer_audio\"; filename=\"recording.wav\"\r\n".data(using: .utf8)!)
+            data.append("Content-Type: audio/wav\r\n\r\n".data(using: .utf8)!)
+            data.append(audioData)
+            data.append("\r\n".data(using: .utf8)!)
+        }
+        
+        data.append("--\(boundary)--\r\n".data(using: .utf8)!)
+        
+        let task = URLSession.shared.uploadTask(with: request, from: data) { data, response, error in
+            if let error = error {
+                print("Error sending recording: \(error)")
+                DispatchQueue.main.async {
+                    isLoading = false // End loading on error
+                }
+                return
+            }
+            
+            if let data = data,
+               let response = try? JSONDecoder().decode(AssessmentResponse.self, from: data) {
+                print("Received response:", response.question_text)
+                
+                DispatchQueue.main.async {
+                    // Update conversation state
+                    self.conversationNum = response.num
+                    self.conversationHistory = response.history
+                    
+                    if !response.end {
+                        // Setup next question
+                        self.biomarkerMonitor.therapistMessage = response.question_text
+                        
+                        if let audioData = Data(base64Encoded: response.question) {
+                            print("Received new audio data, size: \(audioData.count)")
+                            do {
+                                self.audioPlayer?.stop()
+                                self.audioPlayer = nil
+                                self.audioPlayer = try AVAudioPlayer(data: audioData)
+                                self.audioPlayer?.prepareToPlay()
+                                print("Successfully created new audio player")
+                            } catch {
+                                print("Failed to create audio player: \(error)")
+                            }
+                        } else {
+                            print("Failed to decode audio data from base64")
+                        }
+                    } else {
+                        print("Conversation ended")
+                    }
+                    
+                    // End loading state
+                    self.isLoading = false
+                }
+            } else {
+                print("Failed to decode server response")
+                if let responseData = data,
+                   let responseStr = String(data: responseData, encoding: .utf8) {
+                    print("Raw response:", responseStr)
+                }
+                DispatchQueue.main.async {
+                    isLoading = false // End loading on decode error
+                }
+            }
+        }
+        task.resume()
+    }
+    
+    // MARK: - Terra and Critical State Functions
+    private func setupCriticalStateHandler() {
+        biomarkerMonitor.onCriticalState = {
+            stopStreaming()
+            
+            // Setup audio player if we have audio data
+            if let audioData = biomarkerMonitor.therapistAudio {
+                do {
+                    // Stop any existing audio
+                    self.audioPlayer?.stop()
+                    self.audioPlayer = nil
+                    
+                    // Create new player
+                    audioPlayer = try AVAudioPlayer(data: audioData)
+                    audioPlayer?.prepareToPlay()
+                } catch {
+                    print("Failed to create audio player: \(error)")
+                }
+            }
+        }
+    }
+    
+    private func playTherapistMessage() {
+        audioPlayer?.play()
+    }
+    
     private func initializeTerra() {
         do {
             terraRT = try Terra()
@@ -59,8 +333,6 @@ struct WatchView: View {
             print("Terra SDK initialized on watchOS")
             terraRT?.setUpdateHandler { update in
                 Task {
-//                    print("Type: \(String(describing: update.type)), Value: \(String(describing: update.val))")
-                    
                     biomarkerMonitor.processUpdate(
                         type: update.type,
                         value: update.val ?? 0,
@@ -74,7 +346,7 @@ struct WatchView: View {
     }
     
     private func calculateMetrics() {
-            biomarkerMonitor.calculateSleepMetrics()
+        biomarkerMonitor.calculateSleepMetrics()
     }
     
     private func startStreaming() {
@@ -120,19 +392,7 @@ struct WatchView: View {
     }
 }
 
-struct ContentView: View {
-    var body: some View {
-        WatchView()
-    }
-}
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
-
-
+// MARK: - Motion Simulation
 extension WatchView {
     private func simulateMotion() {
         var time = 0.0
@@ -161,5 +421,27 @@ extension WatchView {
                 )
             }
         }
+    }
+}
+
+// MARK: - Supporting Types
+struct AssessmentResponse: Codable {
+    let num: Int
+    let history: [[String: String]]
+    let question: String
+    let question_text: String
+    let end: Bool
+    let metadata: [String: String]
+}
+
+struct ContentView: View {
+    var body: some View {
+        WatchView()
+    }
+}
+
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
     }
 }

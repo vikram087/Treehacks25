@@ -14,6 +14,8 @@ from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 from twilio.rest import Client
+from ai_analysis import generate_crisis_plan
+
 
 whispr_model = whisper.load_model("base")
 
@@ -50,6 +52,43 @@ chroma_client = chromadb.HttpClient(
 def health() -> tuple[Response, int]:
     return jsonify({"message": "Success"}), 200
 
+# Generating the crisis plan and saving to ChromaDB
+@app.route("/api/generate-crisis-plan", methods=["POST"])
+def generate_crisis():
+    try:
+        data = request.get_json()
+        if "biometric_data" not in data or "behavioral_summary" not in data:
+            return jsonify({"error": "Missing biometric_data or behavioral_summary"}), 400
+
+
+        biometric_data = data["biometric_data"]
+        behavioral_summary = data["behavioral_summary"]
+
+        # Generate Crisis Plan
+        crisis_plan = generate_crisis_plan(biometric_data, behavioral_summary)
+
+        # Ensure AI response is valid JSON
+        if isinstance(crisis_plan, str):
+            crisis_plan = crisis_plan.strip("```json").strip("```")
+            try:
+                crisis_plan = json.loads(crisis_plan)
+            except json.JSONDecodeError:
+                return jsonify({"error": "Invalid AI-generated JSON response"}), 500
+
+        # Store in ChromaDB
+        # collection = chroma_client.get_or_create_collection(name="patient_records")
+        # document_id = f"crisis_plan_{biometric_data['userEmail']}_{datetime.now().isoformat()}"
+
+        # collection.add(
+        #     ids=[document_id],
+        #     documents=[json.dumps(crisis_plan)],
+        #     metadatas=[{"userEmail": biometric_data["userEmail"], "timestamp": datetime.now().isoformat()}],
+        # )
+
+        return jsonify({"success": True, "crisis_plan": crisis_plan}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 def transcribe(audio_file) -> str:
     try:
@@ -133,7 +172,14 @@ def create_or_upload_user(email: str, name: str) -> tuple[str, int]:
         collection = chroma_client.get_or_create_collection(name="patients")
 
         for doc in docs:
-            if email == doc["document"]["email"] and name == doc["document"]["name"]:
+            print("DOOOOOOC:::::::::", doc)
+            print("  ")
+            print("  ")
+            print("  ")
+            # if email == doc["document"]["email"] and name == doc["document"]["name"]:
+            if email == doc["document"].get("email", "jodoe@gmail.com") and name == doc[
+                "document"
+            ].get("name", "John Doe"):
                 return doc["id"], 200
 
         new_id = f"{uuid.uuid4()}"
@@ -416,7 +462,7 @@ def assessment() -> tuple[Response, int]:
     # ==============================================
     #  MODEL HERE
     # ==============================================
-    genai.configure(api_key=GEMINI_API_KEY)
+    genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
     model = genai.GenerativeModel("gemini-2.0-flash")
 
     try:
@@ -482,20 +528,19 @@ def assessment() -> tuple[Response, int]:
         end = data.get("end", "false").lower() == "true"
         ai_question_text = data.get("question_text", "")
         meta = json.loads(data.get("metadata", "{}"))
-        # audio_file = request.files["answer_audio"]  # audio response sent by watch
+        audio_file = request.files["answer_audio"]  # audio response sent by watch
 
-        # if audio_file.filename == "" or ai_question_text == "" or len(meta) == 0:
-        #     return jsonify({"error": "invalid input"}), 400
+        if audio_file.filename == "" or ai_question_text == "" or len(meta) == 0:
+            return jsonify({"error": "invalid input"}), 400
 
-        # answer_text = transcribe(audio_file)
-        answer_text = data.get("answer_text", "")
+        answer_text = transcribe(audio_file)
 
         print("TRANSCRIBED AUDIO:", answer_text, "\n\n")
 
         chat_history.append({"question": ai_question_text, "answer": answer_text})
 
         # If conversation is ended, upload to database
-        if end or num >= 10:
+        if end or num >= 2:
             print("UPLOADING", "\n\n")
             upload(
                 chat_history,
@@ -531,19 +576,16 @@ def assessment() -> tuple[Response, int]:
 
         # Generate response
         response = model.generate_content(prompt).text
-
-        # Convert text to speech
-        # audio_base64 = text_to_speech(response)
-        audio_base64 = "TIOWEHFogih3wogwrehgo9ughw3roiughqewrp"
-
+        audio_base64 = text_to_speech(response)
         if audio_base64 is None:
+            # If ElevenLabs fails, send a proper error response
             return jsonify({"error": "Failed to generate audio"}), 500
 
         return jsonify(
             {
                 "num": num + 1,
                 "history": chat_history,
-                "question": audio_base64,
+                "question": audio_base64,  # This will now be real audio data
                 "question_text": response,
                 "end": False,
                 "metadata": meta,
@@ -652,15 +694,15 @@ def alert_status():
         is_critical = data["agitation"] > 50
 
         if is_critical:
-            message = TWILIO_CLIENT.messages.create(
-                from_=TWILIO_PHONE_NUMBER, body="Alert! Mood swing!", to="+16047806112"
-            )
-            print(message.sid)
+            # message = TWILIO_CLIENT.messages.create(
+            #     from_=TWILIO_PHONE_NUMBER, body="Alert! Mood swing!", to="+16047806112"
+            # )
+            # print(message.sid)
 
             # Initiate the conversation with the watch
             question_text = """Hi, I'm an AI therapist. I've noticed that you've been having some mood swings.
             Can you tell me how you are feeling right now?"""
-            
+
             # Convert text to speech
             audio_base64 = text_to_speech(question_text)
             if audio_base64 is None:
@@ -669,11 +711,13 @@ def alert_status():
             question_text = ""
             audio_base64 = None
 
-        return jsonify({
-            "critical": is_critical, 
-            "question_text": question_text,
-            "question": audio_base64
-        }), 200
+        return jsonify(
+            {
+                "critical": is_critical,
+                "question_text": question_text,
+                "question": audio_base64,
+            }
+        ), 200
 
     except Exception as e:
         print("Error storing metrics:", e)

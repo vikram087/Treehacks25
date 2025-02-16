@@ -14,9 +14,14 @@ class BiomarkerMonitor: ObservableObject {
     @Published var currentHRV: Double = 0.0
     @Published var lastHeartRate: Double = 0.0
     @Published var currentAgitation: Double = 0.0
+    @Published var isCriticalState: Bool = false
+    @Published var therapistAudio: Data? = nil
+    @Published var therapistMessage: String = ""
+    
+    var onCriticalState: (() -> Void)?
     
     // Server configuration
-    private let baseURL = "http://localhost:8080/" // Change this to your actual server URL
+    let baseURL = "http://localhost:8080/" // Change this to your actual server URL
     
     // Buffers
     private var heartRateBuffer: [Double] = []
@@ -107,20 +112,35 @@ class BiomarkerMonitor: ObservableObject {
             ]
             
             // Post to server and handle response
-            postToServer(endpoint: "alert_status", payload: payload) { data, response, error in
-                if let data = data,
-                   let responseJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-                   let isCritical = responseJson["critical"] as? Bool {
-                    
-                    if isCritical,
-                       let question = responseJson["question"] as? String {
-                        // Handle critical state - You can add your conversation triggering logic here
-                        print("Critical state detected! Question: \(question)")
-                        // Trigger conversation or UI update as needed
-                    }
-                }
-            }
-            
+            postToServer(endpoint: "alert_status", payload: payload) { [weak self] data, response, error in
+                            guard let self = self else { return }
+                            
+                            if let data = data,
+                               let responseJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+                                
+                                if let isCritical = responseJson["critical"] as? Bool {
+                                    DispatchQueue.main.async {
+                                        self.isCriticalState = isCritical
+                                        
+                                        if isCritical {
+                                            // Get the therapist message
+                                            if let questionText = responseJson["question_text"] as? String {
+                                                self.therapistMessage = questionText
+                                            }
+                                            
+                                            // Decode the audio
+                                            if let audioBase64 = responseJson["question"] as? String,
+                                               let audioData = Data(base64Encoded: audioBase64) {
+                                                self.therapistAudio = audioData
+                                            }
+                                            
+                                            // Notify watch view to stop streaming
+                                            self.onCriticalState?()
+                                        }
+                                    }
+                                }
+                            }
+                        }
             // Clear HRV buffer
             heartRateBuffer.removeAll()
         }
