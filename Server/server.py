@@ -507,3 +507,56 @@ def alert_status():
     except Exception as e:
         print("Error storing metrics:", e)
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/health-metrics/<metric_type>", methods=["POST"])
+def health_metrics(metric_type):
+    try:
+        data = request.get_json()
+        
+        # Validate metric type
+        if metric_type not in ["sleep", "activity"]:
+            return jsonify({"error": "Invalid metric type"}), 400
+        
+        # First, ensure user exists/create if needed
+        user_id, status = create_or_upload_user(data["userEmail"], data["userName"])
+        
+        if status >= 400:
+            return jsonify({"error": "Failed to process user"}), status
+            
+        # Add user_id to the metrics
+        data["user_id"] = user_id
+        
+        # Store the entire payload in ChromaDB
+        collection_name = f"user_{metric_type}_metrics"
+        collection = chroma_client.get_or_create_collection(name=collection_name)
+        
+        current_time = datetime.now().isoformat()
+        document = {
+            "metrics": data,
+            "timestamp": current_time,
+            "user_id": user_id,
+            "metric_type": metric_type
+        }
+        
+        collection.add(
+            ids=[f"{uuid.uuid4()}"],
+            documents=[json.dumps(document)],
+            metadatas=[{
+                "email": data["userEmail"], 
+                "name": data["userName"],
+                "timestamp": current_time,
+                "user_id": user_id,
+                "metric_type": metric_type
+            }]
+        )
+
+        return jsonify({
+            "success": True,
+            "message": f"{metric_type} metrics recorded successfully"
+        }), 200
+
+    except Exception as e:
+        print(f"Error storing {metric_type} metrics:", e)
+        return jsonify({"error": str(e)}), 500
+    
