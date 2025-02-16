@@ -12,15 +12,6 @@ function App() {
 					<h1 className="text-xl font-semibold text-gray-800">
 						Therapist Portal
 					</h1>
-					<div className="flex items-center space-x-4">
-						<button
-							type="button"
-							className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-						>
-							<LogIn size={20} />
-							<span>Sign In</span>
-						</button>
-					</div>
 				</div>
 			</nav>
 
@@ -63,13 +54,6 @@ function App() {
 								Receive instant notifications for critical patient events and
 								concerning patterns in patient responses.
 							</p>
-							<button
-								type="button"
-								className="w-full flex items-center justify-between px-4 py-2 bg-white text-red-600 border border-red-200 rounded-lg group-hover:bg-red-50 transition-colors"
-							>
-								<span>Learn More</span>
-								<ChevronRight size={20} />
-							</button>
 						</div>
 					</div>
 
@@ -88,13 +72,6 @@ function App() {
 								Track and analyze patient health metrics with advanced
 								visualization tools and trend analysis.
 							</p>
-							<button
-								type="button"
-								className="w-full flex items-center justify-between px-4 py-2 bg-white text-green-600 border border-green-200 rounded-lg group-hover:bg-green-50 transition-colors"
-							>
-								<span>Learn More</span>
-								<ChevronRight size={20} />
-							</button>
 						</div>
 					</div>
 
@@ -113,34 +90,6 @@ function App() {
 								Leverage advanced AI to identify patterns and potential concerns
 								in patient responses and behavior.
 							</p>
-							<button
-								type="button"
-								className="w-full flex items-center justify-between px-4 py-2 bg-white text-amber-600 border border-amber-200 rounded-lg group-hover:bg-amber-50 transition-colors"
-							>
-								<span>Learn More</span>
-								<ChevronRight size={20} />
-							</button>
-						</div>
-					</div>
-				</div>
-
-				{/* Stats Section */}
-				<div className="mt-16 text-center bg-white rounded-xl shadow-sm border border-gray-100 p-8 max-w-4xl mx-auto">
-					<h3 className="text-2xl font-semibold text-gray-900 mb-8">
-						Trusted by Mental Health Professionals
-					</h3>
-					<div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-						<div>
-							<p className="text-3xl font-bold text-blue-600 mb-2">2,000+</p>
-							<p className="text-gray-600">Active Therapists</p>
-						</div>
-						<div>
-							<p className="text-3xl font-bold text-blue-600 mb-2">50,000+</p>
-							<p className="text-gray-600">Patients Monitored</p>
-						</div>
-						<div>
-							<p className="text-3xl font-bold text-blue-600 mb-2">98%</p>
-							<p className="text-gray-600">Satisfaction Rate</p>
 						</div>
 					</div>
 				</div>

@@ -167,6 +167,18 @@ function PatientProfile() {
 									).length
 								}
 							</p>
+							<p className="text-sm text-gray-600">
+								There are{" "}
+								{
+									Object.values(patientData).map(
+										(patient) =>
+											!patient.status ||
+											patient.status === "" ||
+											patient.status.toLowerCase() === "critical",
+									).length
+								}{" "}
+								concerning assessments from {patientMeta.name}
+							</p>
 						</div>
 
 						<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">

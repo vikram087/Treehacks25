@@ -134,7 +134,6 @@ function Dashboard() {
 								<th className="px-4 py-2">Name</th>
 								<th className="px-4 py-2">Email</th>
 								<th className="px-4 py-2">Status</th>
-								<th className="px-4 py-2">Schedule</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -152,20 +151,15 @@ function Dashboard() {
 										{patient.name}
 									</td>
 									<td className="px-4 py-2">
-										<a href={`mailto:${patient.email}`}>{patient.email}</a>
+										<a
+											href={`mailto:${patient.email}`}
+											className="text-blue-500 hover:underline"
+										>
+											{patient.email}
+										</a>
 									</td>
 									<td className="px-4 py-2 font-semibold">
 										{patient.status || "Critical"}
-									</td>
-									<td className="px-4 py-2 text-center">
-										<button
-											className="text-blue-500 hover:text-blue-700"
-											onClick={() =>
-												alert(`Starting Zoom meeting for ${patient.name}`)
-											}
-										>
-											<Video size={20} />
-										</button>
 									</td>
 								</tr>
 							))}
