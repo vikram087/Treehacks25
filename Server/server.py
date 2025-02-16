@@ -449,29 +449,61 @@ def chat() -> tuple[Response, int]:
 
 @app.route("/alert_status", methods=["POST"])
 def alert_status():
-    data = request.get_json()
-
-    if data["hrv"] > 100:
-        message = TWILIO_CLIENT.messages.create(
-            from_=TWILIO_PHONE_NUMBER,
-            body='Alert! Mood swing!',
-            to='+16047806112'
-        )
-        print(message.sid)
+    try:
+        data = request.get_json()
         
-        # Initiate the conversation with the watch
-        question = """Hi, I'm an AI therapist. I've noticed that you've been having some mood swings.
-        Can you tell me how you are feeling right now?"""
+        # First, ensure user exists/create if needed
+        user_id, status = create_or_upload_user(data["userEmail"], data["userName"])
+        
+        if status >= 400:
+            return jsonify({"error": "Failed to process user"}), status
+            
+        # Add user_id to the metrics
+        data["user_id"] = user_id
+        
+        # Store the entire payload in ChromaDB
+        collection = chroma_client.get_or_create_collection(name="user_metrics")
+        
+        current_time = datetime.now().isoformat()
+        document = {
+            "metrics": data,
+            "timestamp": current_time,
+            "user_id": user_id
+        }
+        
+        collection.add(
+            ids=[f"{uuid.uuid4()}"],
+            documents=[json.dumps(document)],
+            metadatas=[{
+                "email": data["userEmail"], 
+                "name": data["userName"],
+                "timestamp": current_time,
+                "user_id": user_id
+            }]
+        )
+
+        # Check for critical state
+        is_critical = data["hrv"] > 100
+        
+        if is_critical:
+            message = TWILIO_CLIENT.messages.create(
+                from_=TWILIO_PHONE_NUMBER,
+                body='Alert! Mood swing!',
+                to='+16047806112'
+            )
+            print(message.sid)
+            
+            # Initiate the conversation with the watch
+            question = """Hi, I'm an AI therapist. I've noticed that you've been having some mood swings.
+            Can you tell me how you are feeling right now?"""
+        else:
+            question = ""
+
         return jsonify({
-            "critical": True,
+            "critical": is_critical,
             "question": question
         }), 200
 
-    return jsonify({
-        "critical": False,
-        "question": ""
-    }), 200
-
-
-if __name__ == "__main__":
-    app.run(port=8080, debug=True)
+    except Exception as e:
+        print("Error storing metrics:", e)
+        return jsonify({"error": str(e)}), 500
