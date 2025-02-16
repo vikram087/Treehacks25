@@ -14,6 +14,8 @@ from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 from twilio.rest import Client
+from ai_analysis import generate_crisis_plan
+
 
 whispr_model = whisper.load_model("base")
 
@@ -50,6 +52,43 @@ chroma_client = chromadb.HttpClient(
 def health() -> tuple[Response, int]:
     return jsonify({"message": "Success"}), 200
 
+# Generating the crisis plan and saving to ChromaDB
+@app.route("/api/generate-crisis-plan", methods=["POST"])
+def generate_crisis():
+    try:
+        data = request.get_json()
+        if "biometric_data" not in data or "behavioral_summary" not in data:
+            return jsonify({"error": "Missing biometric_data or behavioral_summary"}), 400
+
+
+        biometric_data = data["biometric_data"]
+        behavioral_summary = data["behavioral_summary"]
+
+        # Generate Crisis Plan
+        crisis_plan = generate_crisis_plan(biometric_data, behavioral_summary)
+
+        # Ensure AI response is valid JSON
+        if isinstance(crisis_plan, str):
+            crisis_plan = crisis_plan.strip("```json").strip("```")
+            try:
+                crisis_plan = json.loads(crisis_plan)
+            except json.JSONDecodeError:
+                return jsonify({"error": "Invalid AI-generated JSON response"}), 500
+
+        # Store in ChromaDB
+        # collection = chroma_client.get_or_create_collection(name="patient_records")
+        # document_id = f"crisis_plan_{biometric_data['userEmail']}_{datetime.now().isoformat()}"
+
+        # collection.add(
+        #     ids=[document_id],
+        #     documents=[json.dumps(crisis_plan)],
+        #     metadatas=[{"userEmail": biometric_data["userEmail"], "timestamp": datetime.now().isoformat()}],
+        # )
+
+        return jsonify({"success": True, "crisis_plan": crisis_plan}), 200
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 def transcribe(audio_file) -> str:
     try:
@@ -233,17 +272,186 @@ def fetch_collection(coll: str) -> list[dict]:
         return [{}]
 
 
+@app.route("/get-user/<user_id>", methods=["GET"])
+def fetch_one_user_data(user_id: str):
+    try:
+        # =========================================================
+        # 1. Initialize the aggregated response structure
+        # =========================================================
+        all_one_patient_data = {
+            "name": "",
+            "email": "",
+            "user_id": user_id,
+            "patient_records": [],  # list of {timestamp, history, summary}
+            "agitation": {},  # {timestamp: agitation}
+            "hrv": {},  # {timestamp: hrv}
+            "sleep_metrics": [],  # list of {timestamp, remSleepHours, ...}
+            "activity_metrics": [],  # list of {timestamp, steps, caloriesBurned, ...}
+        }
+
+        # =========================================================
+        # 2. Fetch 'patients' collection to get name/email for this user_id
+        # =========================================================
+        patients_data = fetch_collection("patients")
+        for doc in patients_data:
+            # doc["document"] might look like {"name": "...", "email": "..."}
+            # or doc["metadata"] might have user_id
+            # since you only store doc with name,email, no "metadata"?
+            # Adjust to your actual structure
+            # We do NOT have user_id in doc["document"], so let's see if doc["metadata"]
+            # or doc["document"] has it
+            # If "user_id" is in doc["metadata"], or doc["document"] ...
+
+            # If your 'patients' collection has "document" = { name, email }
+            # and no user_id, you might store user_id in doc["id"] or doc["metadata"]
+            # Example assumption:
+            # doc["metadata"] = {"user_id": "..."} or doc["document"]["user_id"]
+
+            # We'll guess doc["metadata"] might be null. So let's unify by email or name or do a special approach
+            # For demonstration, let's say doc["document"] is {name, email, user_id}:
+            doc_user_id = doc["id"]
+            if doc_user_id == user_id:
+                all_one_patient_data["name"] = doc["document"].get("name", "")
+                all_one_patient_data["email"] = doc["document"].get("email", "")
+
+        # =========================================================
+        # 3. Fetch 'patient_records' for conversation data
+        #    document = { "history": [...], "summary": "...", "timestamp": "..." }
+        #    metadata = { "metadata": {...} }, with "metadata": { "user_id": "..." }
+        # =========================================================
+        pr_data = fetch_collection("patient_records")
+        for doc in pr_data:
+            meta = doc["metadata"] or {}
+            doc_user_id = meta.get("user_id")
+            if doc_user_id == user_id:
+                # doc["document"] has "history", "summary", "timestamp"
+                rec = {
+                    "timestamp": doc["document"].get("timestamp", ""),
+                    "history": doc["document"].get("history", []),
+                    "summary": doc["document"].get("summary", ""),
+                    "id": doc["id"],
+                }
+                all_one_patient_data["patient_records"].append(rec)
+
+        # =========================================================
+        # 4. Fetch 'user_metrics' for agitation, hrv, etc.
+        #    document = {
+        #       "metrics": { "agitation": ..., "hrv": ..., "user_id": ... },
+        #       "timestamp": "...",
+        #       "user_id": "..."
+        #    }
+        # =========================================================
+        um_data = fetch_collection("user_metrics")
+        for doc in um_data:
+            meta = doc["metadata"] or {}
+            # doc["document"]["user_id"] or doc["document"]["metrics"]["user_id"]?
+            doc_user_id = doc["document"].get("user_id")
+            if doc_user_id == user_id:
+                # doc["document"] => { metrics: {agitation,hrv}, timestamp, user_id }
+                metrics = doc["document"].get("metrics", {})
+                tstamp = doc["document"].get("timestamp", "")
+                # "agitation": {timestamp: agitation}
+                all_one_patient_data["agitation"][tstamp] = metrics.get("agitation")
+                all_one_patient_data["hrv"][tstamp] = metrics.get("hrv")
+
+        # =========================================================
+        # 5. Fetch 'user_sleep_metrics'
+        #    document = {
+        #      "metrics": {
+        #         "remSleepHours", "deepSleepHours", "awakeTime", "sleepQualityScore",
+        #         "user_id", ...
+        #      },
+        #      "timestamp": "...",
+        #      "user_id": "...",
+        #      "metric_type": "sleep"
+        #    }
+        # =========================================================
+        us_data = fetch_collection("user_sleep_metrics")
+        for doc in us_data:
+            doc_user_id = doc["document"].get("user_id")
+            if doc_user_id == user_id:
+                tstamp = doc["document"].get("timestamp", "")
+                m = doc["document"].get("metrics", {})
+                entry = {
+                    "timestamp": tstamp,
+                    "remSleepHours": m.get("remSleepHours"),
+                    "deepSleepHours": m.get("deepSleepHours"),
+                    "awakeTime": m.get("awakeTime"),
+                    "sleepQualityScore": m.get("sleepQualityScore"),
+                    "totalSleepHours": m.get("totalSleepHours"),
+                }
+                all_one_patient_data["sleep_metrics"].append(entry)
+
+        # =========================================================
+        # 6. Fetch 'user_activity_metrics'
+        #    document = {
+        #      "metrics": {
+        #         "steps", "caloriesBurned", "activityScore", "user_id", ...
+        #      },
+        #      "timestamp": "...",
+        #      "user_id": "...",
+        #      "metric_type": "activity"
+        #    }
+        # =========================================================
+        ua_data = fetch_collection("user_activity_metrics")
+        for doc in ua_data:
+            doc_user_id = doc["document"].get("user_id")
+            if doc_user_id == user_id:
+                tstamp = doc["document"].get("timestamp", "")
+                m = doc["document"].get("metrics", {})
+                entry = {
+                    "timestamp": tstamp,
+                    "steps": m.get("steps"),
+                    "caloriesBurned": m.get("caloriesBurned"),
+                    "activityScore": m.get("activityScore"),
+                }
+                all_one_patient_data["activity_metrics"].append(entry)
+
+        # =========================================================
+        # Return the aggregated data
+        # =========================================================
+
+        return jsonify({"success": True, "data": all_one_patient_data}), 200
+
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+def get_timestamp(doc):
+    timestamp = doc.get("document", {}).get("timestamp")
+    if not isinstance(timestamp, str):
+        # If missing or invalid, return an extreme date
+        return datetime.min
+    try:
+        return datetime.fromisoformat(timestamp)
+    except ValueError:
+        # If timestamp is not ISO format, fallback
+        return datetime.min
+
+
 @app.route("/fetch-patient-data/<collection>", methods=["GET"])
 def fetch_data(collection: str):
     try:
         data = fetch_collection(collection)
 
-        sorted_data = sorted(
-            data,
-            key=lambda x: datetime.fromisoformat(x["document"]["timestamp"]),
-            reverse=True,
-        )
+        if collection != "patients":
+
+            def get_timestamp(doc):
+                timestamp = doc.get("document", {}).get("timestamp")
+                if not isinstance(timestamp, str):
+                    return datetime.min
+                try:
+                    return datetime.fromisoformat(timestamp)
+                except ValueError:
+                    return datetime.min
+
+            sorted_data = sorted(data, key=get_timestamp, reverse=True)
+        else:
+            sorted_data = data
+
         return jsonify({"success": True, "data": sorted_data}), 200
+
     except Exception as e:
         print(e)
         return jsonify({"success": False, "error": str(e)}), 500
