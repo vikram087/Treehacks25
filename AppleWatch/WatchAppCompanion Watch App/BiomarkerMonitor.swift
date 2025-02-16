@@ -5,17 +5,18 @@
 //  Created by ajapps on 2/15/25.
 //
 
-
 import Foundation
 import HealthKit
 import Combine
-
 
 class BiomarkerMonitor: ObservableObject {
     // Published properties for UI updates
     @Published var currentHRV: Double = 0.0
     @Published var lastHeartRate: Double = 0.0
     @Published var currentAgitation: Double = 0.0
+    
+    // Server configuration
+    private let baseURL = "http://localhost:8080/api" // Change this to your actual server URL
     
     // Buffers
     private var heartRateBuffer: [Double] = []
@@ -31,6 +32,42 @@ class BiomarkerMonitor: ObservableObject {
         self.userEmail = userEmail
     }
     
+    // MARK: - Server Communication
+    private func postToServer(endpoint: String, payload: [String: Any]) {
+        guard let url = URL(string: "\(baseURL)/\(endpoint)") else {
+            print("Invalid URL")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: payload)
+            
+            let task = URLSession.shared.dataTask(with: request) { data, response, error in
+                if let error = error {
+                    print("Error posting to server: \(error)")
+                    return
+                }
+                
+                if let httpResponse = response as? HTTPURLResponse {
+                    print("Server response code: \(httpResponse.statusCode)")
+                }
+                
+                if let data = data,
+                   let responseString = String(data: data, encoding: .utf8) {
+                    print("Server response: \(responseString)")
+                }
+            }
+            task.resume()
+        } catch {
+            print("Error creating request body: \(error)")
+        }
+    }
+    
+    // MARK: - Data Processing
     func processUpdate(type: String?, value: Double, timestamp: String) {
         switch type {
         case "HEART_RATE", "RUNNING_HEART_RATE":
@@ -62,8 +99,14 @@ class BiomarkerMonitor: ObservableObject {
                 self.currentAgitation = agitationScore
             }
             
-            // Post both scores
-            postToServer(hrv: hrvScore, agitation: agitationScore)
+            // Post HRV metrics
+            let hrvPayload: [String: Any] = [
+                "hrv": hrvScore,
+                "agitation": agitationScore,
+                "userName": userName,
+                "userEmail": userEmail
+            ]
+            postToServer(endpoint: "hrv-metrics", payload: hrvPayload)
             
             // Clear HRV buffer
             heartRateBuffer.removeAll()
@@ -140,20 +183,9 @@ class BiomarkerMonitor: ObservableObject {
         print("Change ratio: \(changeRatio), Avg magnitude: \(avgMagnitude), Final score: \(finalScore)")  // Debug print
         return finalScore
     }
-    
-    private func postToServer(hrv: Double, agitation: Double) {
-        let payload: [String: Any] = [
-            "hrv": hrv,
-            "agitation": agitation,
-            "userName": userName,
-            "userEmail": userEmail
-        ]
-        
-        print(payload) // For debugging
-    }
 }
 
-
+// MARK: - HealthKit Extension
 extension BiomarkerMonitor {
     func calculateSleepMetrics() {
         let healthStore = HKHealthStore()
@@ -252,7 +284,7 @@ extension BiomarkerMonitor {
                 "sleepQualityScore": sleepQualityScore
             ]
             
-            print("Sleep Metrics:", sleepMetrics)
+            self.postToServer(endpoint: "sleep-metrics", payload: sleepMetrics)
         }
         
         healthStore.execute(query)
@@ -304,7 +336,7 @@ extension BiomarkerMonitor {
                     "activityScore": activityScore
                 ]
                 
-                print("Activity Metrics:", activityMetrics)
+                self.postToServer(endpoint: "activity-metrics", payload: activityMetrics)
             }
             
             healthStore.execute(energyQuery)
