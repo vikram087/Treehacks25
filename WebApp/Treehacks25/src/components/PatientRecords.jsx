@@ -37,15 +37,13 @@ function PatientRecords({ patientData }) {
 						onClick={() => navigate(`/assessment/${patient.id}`)}
 					>
 						<h3 className="text-lg font-semibold text-gray-900">
-							{formatTimestamp(patient.document?.timestamp) || "Time Uncertain"}
+							{formatTimestamp(patient?.timestamp) || "Time Uncertain"}
 						</h3>
 						<div
 							className={`text-sm text-gray-600 overflow-hidden transition-all ${expandedId === patient.id ? "max-h-none" : "max-h-20"}`}
 						>
 							{parse(
-								DOMPurify.sanitize(
-									patient.document?.summary || "No summary available",
-								),
+								DOMPurify.sanitize(patient?.summary || "No summary available"),
 							)}
 						</div>
 						<button

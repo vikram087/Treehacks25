@@ -17,62 +17,201 @@ import { useNavigate } from "react-router-dom";
 function PatientProfile() {
 	const [patientData, setPatientData] = useState([]);
 	const [patientMeta, setPatientMeta] = useState({});
+	const [sleepData, setSleepData] = useState({});
+	const [activityVals, setActivityValues] = useState({});
+	const [hrvValues, setHrv] = useState({});
+	const [aValues, setA] = useState({});
 	const [loading, setLoading] = useState(false);
 	const { id } = useParams();
 	const navigate = useNavigate();
 
-	const heartRateData = patientData
-		.filter((doc) => doc.document?.["bio-data"]?.heart_rate !== undefined)
-		.map((doc) => doc.document["bio-data"].heart_rate);
-
-	const stepsData = patientData
-		.filter((doc) => doc.document?.["bio-data"]?.steps !== undefined)
-		.map((doc) => doc.document["bio-data"].steps);
-
-	const graphData = {
-		heartRate: {
-			labels: patientData.map((doc) =>
-				new Date(doc.document.timestamp).toLocaleDateString(),
-			),
-			datasets: [
-				{
-					label: "Heart Rate (BPM)",
-					data: heartRateData,
-					borderColor: "#3b82f6",
-					backgroundColor: "rgba(59, 130, 246, 0.2)",
-				},
-			],
-		},
-		steps: {
-			labels: patientData.map((doc) =>
-				new Date(doc.document.timestamp).toLocaleDateString(),
-			),
-			datasets: [
-				{
-					label: "Steps",
-					data: stepsData,
-					borderColor: "#10b981",
-					backgroundColor: "rgba(16, 185, 129, 0.2)",
-				},
-			],
-		},
+	const sleepChartData = {
+		labels: sleepData.time, // x-axis
+		datasets: [
+			{
+				label: "REM Sleep (hrs)",
+				data: sleepData.rem,
+				borderColor: "#3b82f6", // e.g. Blue
+				backgroundColor: "rgba(59,130,246,0.2)",
+				fill: false,
+				tension: 0.1,
+			},
+			{
+				label: "Deep Sleep (hrs)",
+				data: sleepData.deep,
+				borderColor: "#10b981", // e.g. Green
+				backgroundColor: "rgba(16,185,129,0.2)",
+				fill: false,
+				tension: 0.1,
+			},
+			{
+				label: "Total Sleep (hrs)",
+				data: sleepData.total,
+				borderColor: "#f59e0b", // e.g. Amber
+				backgroundColor: "rgba(245,158,11,0.2)",
+				fill: false,
+				tension: 0.1,
+			},
+			{
+				label: "Awake Time (hrs)",
+				data: sleepData.awake,
+				borderColor: "#f59e0b", // e.g. Amber
+				backgroundColor: "rgba(245,158,11,0.2)",
+				fill: false,
+				tension: 0.1,
+			},
+			// possibly 'awakeTime' or 'sleepQualityScore' as more lines
+		],
 	};
-	console.log(graphData);
+
+	const activityScoreChartData = {
+		labels: activityVals.time,
+		datasets: [
+			{
+				label: "Activity Score",
+				data: activityVals.score,
+				borderColor: "#3b82f6", // e.g., blue
+				backgroundColor: "rgba(59,130,246,0.2)",
+				fill: false,
+				tension: 0.1,
+			},
+		],
+	};
+
+	const caloriesChartData = {
+		labels: activityVals.time,
+		datasets: [
+			{
+				label: "Calories Burned",
+				data: activityVals.cals,
+				borderColor: "#f59e0b", // e.g., amber
+				backgroundColor: "rgba(245,158,11,0.2)",
+				fill: false,
+				tension: 0.1,
+			},
+		],
+	};
+
+	const stepsChartData = {
+		labels: activityVals.time,
+		datasets: [
+			{
+				label: "Steps",
+				data: activityVals.steps,
+				borderColor: "#10b981", // e.g., green
+				backgroundColor: "rgba(16,185,129,0.2)",
+				fill: false,
+				tension: 0.1,
+			},
+		],
+	};
+
+	const chartData = {
+		hrv: {
+			labels: hrvValues.time,
+			datasets: [
+				{
+					label: "HRV",
+					data: hrvValues.vals,
+					borderColor: "#ef4444",
+					backgroundColor: "rgba(239, 68, 68, 0.2)",
+					fill: false,
+					tension: 0.1,
+				},
+			],
+		},
+		agitation: {
+			labels: aValues.time,
+			datasets: [
+				{
+					label: "agitation",
+					data: aValues.vals,
+					borderColor: "#ef4444",
+					backgroundColor: "rgba(239, 68, 68, 0.2)",
+					fill: false,
+					tension: 0.1,
+				},
+			],
+		},
+		sleep: sleepChartData,
+		activityScore: activityScoreChartData,
+		caloriesBurned: caloriesChartData,
+		steps: stepsChartData,
+	};
 
 	useEffect(() => {
 		const fetchData = async () => {
 			setLoading(true);
 			try {
 				const res = await fetch(
-					`${import.meta.env.VITE_BACKEND_URL}/fetch-patient-data/patient_records`,
+					`${import.meta.env.VITE_BACKEND_URL}/get-user/${id}`,
 				);
 				const data = await res.json();
-				const thisPatientData = data.data.filter(
-					(doc) => doc.metadata.user_id === id,
+
+				setPatientMeta({
+					user_id: data.data.user_id,
+					name: data.data.name,
+					email: data.data.email,
+				});
+				setPatientData(data.data.patient_records);
+
+				const hTimestamps = Object.keys(data.data.hrv);
+				hTimestamps.sort();
+				const hrvValues = hTimestamps.map((ts) => data.data.hrv[ts]);
+				setHrv({ vals: hrvValues, time: hTimestamps });
+
+				const aTimestamps = Object.keys(data.data.agitation);
+				aTimestamps.sort();
+				const aValues = aTimestamps.map((ts) => data.data.agitation[ts]);
+				setA({ vals: aValues, time: aTimestamps });
+
+				data.data.sleep_metrics.sort(
+					(a, b) => new Date(a.timestamp) - new Date(b.timestamp),
 				);
-				console.log(thisPatientData);
-				setPatientData(thisPatientData);
-				setPatientMeta(thisPatientData[0].metadata);
+
+				const timeLabels = data.data.sleep_metrics.map((row) => row.timestamp);
+
+				const remValues = data.data.sleep_metrics.map(
+					(row) => row.remSleepHours,
+				);
+				const deepValues = data.data.sleep_metrics.map(
+					(row) => row.deepSleepHours,
+				);
+				const totalValues = data.data.sleep_metrics.map(
+					(row) => row.totalSleepHours,
+				);
+				const awakeValues = data.data.sleep_metrics.map((row) => row.awakeTime);
+
+				setSleepData({
+					time: timeLabels,
+					rem: remValues,
+					deep: deepValues,
+					total: totalValues,
+					awake: awakeValues,
+				});
+
+				data.data.activity_metrics.sort(
+					(a, b) => new Date(a.timestamp) - new Date(b.timestamp),
+				);
+
+				// Build arrays
+				const activityTimeLabels = data.data.activity_metrics.map(
+					(row) => row.timestamp,
+				);
+				const activityScoreValues = data.data.activity_metrics.map(
+					(row) => row.activityScore,
+				);
+				const caloriesValues = data.data.activity_metrics.map(
+					(row) => row.caloriesBurned,
+				);
+				const stepsValues = data.data.activity_metrics.map((row) => row.steps);
+
+				setActivityValues({
+					time: activityTimeLabels,
+					score: activityScoreValues,
+					cals: caloriesValues,
+					steps: stepsValues,
+				});
 			} catch (error) {
 				console.error(error);
 			} finally {
@@ -158,26 +297,11 @@ function PatientProfile() {
 								</span>
 							</div>
 							<p className="text-2xl font-bold text-gray-900 mb-1">
-								{
-									Object.values(patientData).map(
-										(patient) =>
-											!patient.status ||
-											patient.status === "" ||
-											patient.status.toLowerCase() === "critical",
-									).length
-								}
+								{patientData.length}
 							</p>
 							<p className="text-sm text-gray-600">
-								There are{" "}
-								{
-									Object.values(patientData).map(
-										(patient) =>
-											!patient.status ||
-											patient.status === "" ||
-											patient.status.toLowerCase() === "critical",
-									).length
-								}{" "}
-								concerning assessments from {patientMeta.name}
+								There are {patientData.length} concerning assessments from{" "}
+								{patientMeta.name}
 							</p>
 						</div>
 
@@ -258,121 +382,7 @@ function PatientProfile() {
 						</div>
 					</div>
 
-					{/* <div className="bg-white rounded-xl shadow-sm p-6 pb-8 border border-gray-100">
-					<div className="flex items-center justify-between mb-6">
-						<div className="flex items-center space-x-3">
-							<div className="p-2 bg-blue-50 rounded-lg">
-								<Activity className="text-blue-600" size={24} />
-							</div>
-							<h3 className="text-lg font-semibold text-gray-900">
-								Mood Tracking
-							</h3>
-						</div>
-						<div className="text-sm text-gray-500">Last 9 months</div>
-					</div>
-					<div className="h-64 w-full">
-						<div className="relative h-full">
-							<div className="absolute left-0 top-0 bottom-0 w-12 flex flex-col justify-between text-sm text-gray-600">
-								{["+4", "+3", "+2", "+1", "0", "-1", "-2", "-3", "-4"].map(
-									(label, index) => (
-										<div key={label} className="relative h-0">
-											<span className="absolute -translate-y-1/2 right-2">
-												{label}
-											</span>
-										</div>
-									),
-								)}
-							</div>
-
-							<div className="ml-12 h-full relative">
-								{["+4", "+3", "+2", "+1", "0", "-1", "-2", "-3", "-4"].map(
-									(label, index) => (
-										<div
-											key={label}
-											className="absolute w-full border-t border-gray-100"
-											style={{
-												top: `${(index / 8) * 100}%`,
-											}}
-										/>
-									),
-								)}
-
-								<div className="absolute inset-0 border-b border-l border-gray-200">
-									<svg className="absolute inset-0 w-full h-full">
-										{[
-											{ month: "Jan", value: -2 },
-											{ month: "Feb", value: 1 },
-											{ month: "Mar", value: 0 },
-											{ month: "Apr", value: 1 },
-											{ month: "May", value: -1 },
-											{ month: "Jun", value: 0 },
-											{ month: "Jul", value: -3 },
-											{ month: "Aug", value: -2 },
-											{ month: "Sep", value: 0 },
-										].map((point, index, array) => {
-											if (index === array.length - 1) return null;
-
-											const x1 = `${(index / (array.length - 1)) * 100}%`;
-											const x2 = `${((index + 1) / (array.length - 1)) * 100}%`;
-											const y1 = `${50 - point.value * 12.5}%`;
-											const y2 = `${50 - array[index + 1].value * 12.5}%`;
-
-											return (
-												<line
-													key={point.month}
-													x1={x1}
-													y1={y1}
-													x2={x2}
-													y2={y2}
-													stroke="#3B82F6"
-													strokeWidth="2"
-												/>
-											);
-										})}
-									</svg>
-									{[
-										{ month: "Jan", value: -2 },
-										{ month: "Feb", value: 1 },
-										{ month: "Mar", value: 0 },
-										{ month: "Apr", value: 1 },
-										{ month: "May", value: -1 },
-										{ month: "Jun", value: 0 },
-										{ month: "Jul", value: -3 },
-										{ month: "Aug", value: -2 },
-										{ month: "Sep", value: 0 },
-									].map((point, index, array) => (
-										<div
-											key={point.month}
-											className="absolute h-3 w-3 bg-blue-500 rounded-full z-10"
-											style={{
-												left: `${(index / (array.length - 1)) * 100}%`,
-												top: `${50 - point.value * 12.5}%`,
-												transform: "translate(-50%, -50%)",
-											}}
-										/>
-									))}
-								</div>
-							</div>
-
-							<div className="ml-12 flex justify-between mt-2 mb-4 text-sm text-gray-600">
-								{[
-									"Jan",
-									"Feb",
-									"Mar",
-									"Apr",
-									"May",
-									"Jun",
-									"Jul",
-									"Aug",
-									"Sep",
-								].map((month) => (
-									<span key={month}>{month}</span>
-								))}
-							</div>
-						</div>
-					</div>
-				</div> */}
-					<BiometricGraph graphDataSets={graphData} />
+					<BiometricGraph graphDataSets={chartData} />
 					<ChatBot
 						conversationChain={patientData.map(
 							(data) => data?.document?.history,

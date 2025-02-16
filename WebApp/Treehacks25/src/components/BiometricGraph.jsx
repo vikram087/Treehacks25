@@ -1,8 +1,40 @@
 import { useState } from "react";
 import { Line } from "react-chartjs-2";
 
+/**
+ * Expects graphDataSets to be an object like:
+ * {
+ *   hrv: {
+ *     labels: [...timestamps...],
+ *     datasets: [
+ *       {
+ *         label: "HRV",
+ *         data: [...values...],
+ *         borderColor: "#ef4444",
+ *         backgroundColor: "rgba(239, 68, 68, 0.2)",
+ *         fill: false,
+ *         tension: 0.1,
+ *       }
+ *     ]
+ *   },
+ *   agitation: {
+ *     labels: [...],
+ *     datasets: [
+ *       {
+ *         label: "Agitation",
+ *         data: [...],
+ *         // styling
+ *       }
+ *     ]
+ *   }
+ * }
+ */
 function BiometricGraph({ graphDataSets = {} }) {
-	const [activeMetric, setActiveMetric] = useState("heartRate");
+	// Default to first metric key if available, else "hrv" or "heartRate"
+	const defaultMetric = Object.keys(graphDataSets)[0] || "hrv";
+	const [activeMetric, setActiveMetric] = useState(defaultMetric);
+
+	// Use fallback { labels: [], datasets: [] } if activeMetric not found
 	const activeData = graphDataSets[activeMetric] || {
 		labels: [],
 		datasets: [],
@@ -21,14 +53,19 @@ function BiometricGraph({ graphDataSets = {} }) {
 					<button
 						key={metric}
 						onClick={() => setActiveMetric(metric)}
-						className={`px-3 py-1 rounded-lg text-sm font-medium ${activeMetric === metric ? "bg-blue-600 text-white" : "bg-gray-200 text-gray-800"}`}
+						className={`px-3 py-1 rounded-lg text-sm font-medium ${
+							activeMetric === metric
+								? "bg-blue-600 text-white"
+								: "bg-gray-200 text-gray-800"
+						}`}
 					>
+						{/* Convert camelCase to spaced words, e.g. hrv -> Hrv */}
 						{metric.replace(/([A-Z])/g, " $1").trim()}
 					</button>
 				))}
 			</div>
 
-			{/* Shortened Chart Display */}
+			{/* Chart Display */}
 			<div
 				className="bg-gray-50 border border-gray-300 rounded-lg p-2"
 				style={{ height: "350px" }}
@@ -45,7 +82,15 @@ function BiometricGraph({ graphDataSets = {} }) {
 							},
 						},
 						scales: {
-							x: { grid: { color: "#e5e7eb" } },
+							x: {
+								grid: { color: "#e5e7eb" },
+								// Show timestamps or date strings
+								title: {
+									display: true,
+									text: "Time",
+									font: { size: 12, weight: "bold" },
+								},
+							},
 							y: {
 								grid: { color: "#e5e7eb" },
 								title: {
@@ -56,7 +101,6 @@ function BiometricGraph({ graphDataSets = {} }) {
 							},
 						},
 					}}
-					height={200}
 				/>
 			</div>
 		</section>

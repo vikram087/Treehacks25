@@ -9,7 +9,7 @@ import ChatBot from "./components/ChatBot";
 
 function Dashboard() {
 	const [patientData, setPatientData] = useState([]);
-	const [patients, setPatients] = useState({});
+	const [patients, setPatients] = useState([{}]);
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 
@@ -17,18 +17,20 @@ function Dashboard() {
 		const fetchData = async () => {
 			try {
 				setLoading(true);
-				const res = await fetch(
+
+				const convoRes = await fetch(
 					`${import.meta.env.VITE_BACKEND_URL}/fetch-patient-data/patient_records`,
 				);
+				const convoData = await convoRes.json();
+				setPatientData(convoData.data);
 
-				const data = await res.json();
-				setPatientData(data.data);
-				setPatients(
-					data.data.reduce((acc, doc) => {
-						acc[doc.metadata.user_id] = doc.metadata;
-						return acc;
-					}, {}),
+				const patientRes = await fetch(
+					`${import.meta.env.VITE_BACKEND_URL}/fetch-patient-data/patients`,
 				);
+
+				const pData = await patientRes.json();
+
+				setPatients(pData.data);
 			} catch (error) {
 				console.error(error);
 			} finally {
@@ -37,24 +39,6 @@ function Dashboard() {
 		};
 		fetchData();
 	}, []);
-
-	const heartRateData = patientData
-		.filter((doc) => doc.document?.["bio-data"]?.heart_rate !== undefined)
-		.map((doc) => doc.document["bio-data"].heart_rate);
-
-	const graphData = {
-		labels: patientData.map((doc) =>
-			new Date(doc.timestamp).toLocaleDateString(),
-		),
-		datasets: [
-			{
-				label: "Heart Rate (BPM)",
-				data: heartRateData,
-				borderColor: "#3b82f6",
-				backgroundColor: "rgba(59, 130, 246, 0.2)",
-			},
-		],
-	};
 
 	return (
 		<>
@@ -83,7 +67,7 @@ function Dashboard() {
 								<span className="text-sm font-medium text-blue-600">Today</span>
 							</div>
 							<p className="text-2xl font-bold text-gray-900 mb-1">
-								{Object.keys(patients).length}
+								{patients.length}
 							</p>
 							<p className="text-sm text-gray-600">Active Patients</p>
 						</div>
@@ -111,13 +95,7 @@ function Dashboard() {
 								</span>
 							</div>
 							<p className="text-2xl font-bold text-gray-900 mb-1">
-								{
-									Object.values(patients).filter(
-										(patient) =>
-											!patient.status ||
-											patient.status.toLowerCase() === "critical",
-									).length
-								}
+								{patients.length}
 							</p>
 							<p className="text-sm text-gray-600">Critical Patients</p>
 						</div>
@@ -127,7 +105,9 @@ function Dashboard() {
 								<div className="p-2 bg-green-50 rounded-lg">
 									<Video className="text-green-600" size={24} />
 								</div>
-								<span className="text-sm font-medium text-green-600">Next 30 Days</span>
+								<span className="text-sm font-medium text-green-600">
+									Next 30 Days
+								</span>
 							</div>
 							<p className="text-2xl font-bold text-gray-900 mb-1">1</p>
 							<p className="text-sm text-gray-600">Upcoming Meetings</p>
@@ -148,29 +128,27 @@ function Dashboard() {
 							</tr>
 						</thead>
 						<tbody>
-							{Object.values(patients).map((patient) => (
+							{patients?.map((patient, index) => (
 								<tr
-									key={patient.user_id}
-									className={`border-t ${!patient.status || patient.status.toLowerCase() === "critical" ? "bg-red-100 text-red-600" : ""}`}
+									key={`${patient.id}_${index}`}
+									className="border-t bg-red-100 text-red-600"
 								>
 									<td
 										className="px-4 py-2 cursor-pointer"
-										onClick={() =>
-											navigate(`/patient-profile/${patient.user_id}`)
-										}
+										onClick={() => navigate(`/patient-profile/${patient.id}`)}
 									>
-										{patient.name}
+										{patient.document?.name || "Unnamed Patient"}
 									</td>
 									<td className="px-4 py-2">
 										<a
-											href={`mailto:${patient.email}`}
+											href={`mailto:${patient.document?.email}`}
 											className="text-blue-500 hover:underline"
 										>
-											{patient.email}
+											{patient.document?.email || "No email available"}
 										</a>
 									</td>
 									<td className="px-4 py-2 font-semibold">
-										{patient.status || "Critical"}
+										{patient.document?.status || "Critical"}
 									</td>
 								</tr>
 							))}

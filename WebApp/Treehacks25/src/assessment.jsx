@@ -22,7 +22,6 @@ function AssessmentResults() {
 				);
 				const data = await res.json();
 				const sessionData = data.data.find((doc) => doc.id === id);
-				console.log(sessionData);
 				setSessionData(sessionData);
 			} catch (error) {
 				console.error(error);

@@ -56,20 +56,18 @@ function NavDropdown({ patients }) {
 					{isOpen && (
 						<div className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg overflow-auto max-h-60 z-20">
 							<ul>
-								{Object.values(patients).length === 0 ? (
+								{patients.length === 0 ? (
 									<li className="px-4 py-2 text-sm text-gray-500">
 										No patients found
 									</li>
 								) : (
-									Object.values(patients).map((patient) => (
+									patients.map((patient) => (
 										<li
-											key={patient.user_id}
-											onClick={() =>
-												navigate(`/patient-profile/${patient.user_id}`)
-											}
+											key={patient.id}
+											onClick={() => navigate(`/patient-profile/${patient.id}`)}
 											className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
 										>
-											{patient.name}
+											{patient.document?.name}
 										</li>
 									))
 								)}

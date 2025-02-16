@@ -16,8 +16,8 @@ API_URL = "http://localhost:8080"
 response = requests.get(f"{API_URL}/api/health")
 print("Health Check:", response.status_code, response.json())
 
-NAME = "Lebron James"
-EMAIL = "info@klutchsports.com"
+NAME = "Jensen Huang"
+EMAIL = "huang@dennys.com"
 NUM_DOCS = 1
 AUDIO_PATH = "./test_audio.wav"
 
