@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime
 from io import BytesIO
 from typing import Optional
+
 import chromadb
 import google.generativeai as genai
 import requests
@@ -132,7 +133,14 @@ def create_or_upload_user(email: str, name: str) -> tuple[str, int]:
         collection = chroma_client.get_or_create_collection(name="patients")
 
         for doc in docs:
-            if email == doc["document"]["email"] and name == doc["document"]["name"]:
+            print("DOOOOOOC:::::::::", doc)
+            print("  ")
+            print("  ")
+            print("  ")
+            # if email == doc["document"]["email"] and name == doc["document"]["name"]:
+            if email == doc["document"].get("email", "jodoe@gmail.com") and name == doc[
+                "document"
+            ].get("name", "John Doe"):
                 return doc["id"], 200
 
         new_id = f"{uuid.uuid4()}"
@@ -324,7 +332,7 @@ def assessment() -> tuple[Response, int]:
         chat_history.append({"question": ai_question_text, "answer": answer_text})
 
         # If conversation is ended, upload to database
-        if end or num >= 10:
+        if end or num >= 2:
             print("UPLOADING", "\n\n")
             upload(
                 chat_history,
@@ -365,14 +373,16 @@ def assessment() -> tuple[Response, int]:
             # If ElevenLabs fails, send a proper error response
             return jsonify({"error": "Failed to generate audio"}), 500
 
-        return jsonify({
-            "num": num + 1,
-            "history": chat_history,
-            "question": audio_base64,  # This will now be real audio data
-            "question_text": response,
-            "end": False,
-            "metadata": meta
-        }), 200
+        return jsonify(
+            {
+                "num": num + 1,
+                "history": chat_history,
+                "question": audio_base64,  # This will now be real audio data
+                "question_text": response,
+                "end": False,
+                "metadata": meta,
+            }
+        ), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -484,7 +494,7 @@ def alert_status():
             # Initiate the conversation with the watch
             question_text = """Hi, I'm an AI therapist. I've noticed that you've been having some mood swings.
             Can you tell me how you are feeling right now?"""
-            
+
             # Convert text to speech
             audio_base64 = text_to_speech(question_text)
             if audio_base64 is None:
@@ -493,11 +503,13 @@ def alert_status():
             question_text = ""
             audio_base64 = None
 
-        return jsonify({
-            "critical": is_critical, 
-            "question_text": question_text,
-            "question": audio_base64
-        }), 200
+        return jsonify(
+            {
+                "critical": is_critical,
+                "question_text": question_text,
+                "question": audio_base64,
+            }
+        ), 200
 
     except Exception as e:
         print("Error storing metrics:", e)

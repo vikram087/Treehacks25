@@ -22,6 +22,7 @@ struct WatchView: View {
     @State private var recordingURL: URL?
     @State private var conversationNum = 0
     @State private var conversationHistory: [[String: String]] = []
+    @State private var isLoading = false // New loading state
 
     var body: some View {
         if biomarkerMonitor.isCriticalState {
@@ -30,38 +31,46 @@ struct WatchView: View {
                 Text("AI Therapist")
                     .font(.headline)
                 
-                Text(biomarkerMonitor.therapistMessage)
-                    .font(.body)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                
-                if audioPlayer != nil {
-                    Button(action: playTherapistMessage) {
-                        Image(systemName: "play.circle.fill")
-                            .font(.title)
-                            .foregroundColor(.blue)
+                if isLoading {
+                    // Loading Animation
+                    ProgressView()
+                        .progressViewStyle(CircularProgressViewStyle())
+                        .scaleEffect(1.5)
+                        .padding(.vertical, 20)
+                } else {
+                    // Regular Content
+                    Text(biomarkerMonitor.therapistMessage)
+                        .font(.body)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal)
+                    
+                    if audioPlayer != nil {
+                        Button(action: playTherapistMessage) {
+                            Image(systemName: "play.circle.fill")
+                                .font(.title)
+                                .foregroundColor(.blue)
+                        }
                     }
+                    
+                    // Record Button
+                    Button(action: toggleRecording) {
+                        Image(systemName: isRecording ? "stop.circle.fill" : "mic.circle.fill")
+                            .font(.system(size: 40))
+                            .foregroundColor(isRecording ? .red : .blue)
+                    }
+                    .padding()
                 }
-                
-                // Record Button
-                Button(action: toggleRecording) {
-                    Image(systemName: isRecording ? "stop.circle.fill" : "mic.circle.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(isRecording ? .red : .blue)
-                }
-                .padding()
                 
                 Button(action: {
                     withAnimation {
                         biomarkerMonitor.isCriticalState = false
-                        // Stop any playing audio when going back
                         audioPlayer?.stop()
                         audioPlayer = nil
                     }
                 }) {
                     HStack {
                         Image(systemName: "arrow.left")
-                        Text("Back to Monitoring")
+                        
                     }
                     .padding(.vertical, 8)
                 }
@@ -189,6 +198,9 @@ struct WatchView: View {
     }
     
     private func sendRecordingToServer(fileURL: URL) {
+        // Start loading state
+        isLoading = true
+        
         print("Starting to send recording...")
         
         let boundary = UUID().uuidString
@@ -197,9 +209,8 @@ struct WatchView: View {
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         
         var data = Data()
-        
         // Add form fields
-        let metadata = ["userName": biomarkerMonitor.userName, "userEmail": biomarkerMonitor.userEmail]
+        let metadata = ["name": biomarkerMonitor.userName, "email": biomarkerMonitor.userEmail]
         print("Sending metadata:", metadata)
         
         // Add metadata
@@ -235,6 +246,9 @@ struct WatchView: View {
         let task = URLSession.shared.uploadTask(with: request, from: data) { data, response, error in
             if let error = error {
                 print("Error sending recording: \(error)")
+                DispatchQueue.main.async {
+                    isLoading = false // End loading on error
+                }
                 return
             }
             
@@ -251,15 +265,11 @@ struct WatchView: View {
                         // Setup next question
                         self.biomarkerMonitor.therapistMessage = response.question_text
                         
-                        // Important: Properly handle audio player updates
                         if let audioData = Data(base64Encoded: response.question) {
                             print("Received new audio data, size: \(audioData.count)")
                             do {
-                                // Explicitly stop and nil out the old player
                                 self.audioPlayer?.stop()
                                 self.audioPlayer = nil
-                                
-                                // Create new player
                                 self.audioPlayer = try AVAudioPlayer(data: audioData)
                                 self.audioPlayer?.prepareToPlay()
                                 print("Successfully created new audio player")
@@ -272,12 +282,18 @@ struct WatchView: View {
                     } else {
                         print("Conversation ended")
                     }
+                    
+                    // End loading state
+                    self.isLoading = false
                 }
             } else {
                 print("Failed to decode server response")
                 if let responseData = data,
                    let responseStr = String(data: responseData, encoding: .utf8) {
                     print("Raw response:", responseStr)
+                }
+                DispatchQueue.main.async {
+                    isLoading = false // End loading on decode error
                 }
             }
         }
