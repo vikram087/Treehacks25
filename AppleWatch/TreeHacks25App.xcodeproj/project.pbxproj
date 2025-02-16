@@ -26,7 +26,6 @@
 		7222F03F2D60B64500EBA569 /* TerraiOS in Frameworks */ = {isa = PBXBuildFile; productRef = 7222F03E2D60B64500EBA569 /* TerraiOS */; };
 		7222F0422D60C69300EBA569 /* TerraRTiOS in Frameworks */ = {isa = PBXBuildFile; productRef = 7222F0412D60C69300EBA569 /* TerraRTiOS */; };
 		72EDF5AA2D6174DA006C1352 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDF5A92D6174DA006C1352 /* Config.swift */; };
-		72EDF5AC2D617518006C1352 /* Config.example.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDF5AB2D617518006C1352 /* Config.example.swift */; };
 		72EDF5AE2D61847B006C1352 /* LegacyBiomarkerMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDF5AD2D61847B006C1352 /* LegacyBiomarkerMonitor.swift */; };
 		72EDF5B02D619D2A006C1352 /* BiomarkerMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 72EDF5AF2D619D2A006C1352 /* BiomarkerMonitor.swift */; };
 /* End PBXBuildFile section */
@@ -106,10 +105,7 @@
 		7222F02B2D60B3E600EBA569 /* WatchAppCompanion_Watch_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAppCompanion_Watch_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		72D31F772D61296A00BC2743 /* WatchAppCompanion-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "WatchAppCompanion-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		72D31F782D61391000BC2743 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		72D31F792D6139F900BC2743 /* WatchAppCompanion Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "WatchAppCompanion Watch App.entitlements"; sourceTree = "<group>"; };
-		72D31F7A2D613B1700BC2743 /* TreeHacks25App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = TreeHacks25App.entitlements; sourceTree = "<group>"; };
 		72EDF5A92D6174DA006C1352 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
-		72EDF5AB2D617518006C1352 /* Config.example.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.example.swift; sourceTree = "<group>"; };
 		72EDF5AD2D61847B006C1352 /* LegacyBiomarkerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyBiomarkerMonitor.swift; sourceTree = "<group>"; };
 		72EDF5AF2D619D2A006C1352 /* BiomarkerMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BiomarkerMonitor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -193,14 +189,12 @@
 		7222EFDD2D60B37700EBA569 /* TreeHacks25App */ = {
 			isa = PBXGroup;
 			children = (
-				72D31F7A2D613B1700BC2743 /* TreeHacks25App.entitlements */,
 				72D31F782D61391000BC2743 /* Info.plist */,
 				7222EFDE2D60B37700EBA569 /* TreeHacks25AppApp.swift */,
 				7222EFE02D60B37700EBA569 /* ContentView.swift */,
 				7222EFE22D60B37A00EBA569 /* Assets.xcassets */,
 				7222EFE42D60B37A00EBA569 /* Preview Content */,
 				72EDF5A92D6174DA006C1352 /* Config.swift */,
-				72EDF5AB2D617518006C1352 /* Config.example.swift */,
 			);
 			path = TreeHacks25App;
 			sourceTree = "<group>";
@@ -233,7 +227,6 @@
 		7222F00D2D60B3DE00EBA569 /* WatchAppCompanion Watch App */ = {
 			isa = PBXGroup;
 			children = (
-				72D31F792D6139F900BC2743 /* WatchAppCompanion Watch App.entitlements */,
 				72D31F772D61296A00BC2743 /* WatchAppCompanion-Watch-App-Info.plist */,
 				7222F00E2D60B3DE00EBA569 /* WatchAppCompanionApp.swift */,
 				7222F0102D60B3DE00EBA569 /* ContentView.swift */,
@@ -513,7 +506,6 @@
 				7222EFE12D60B37700EBA569 /* ContentView.swift in Sources */,
 				7222EFDF2D60B37700EBA569 /* TreeHacks25AppApp.swift in Sources */,
 				72EDF5AA2D6174DA006C1352 /* Config.swift in Sources */,
-				72EDF5AC2D617518006C1352 /* Config.example.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -736,7 +728,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25App;
+				PRODUCT_BUNDLE_IDENTIFIER = mli.TreeHacks25App;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -773,7 +765,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25App;
+				PRODUCT_BUNDLE_IDENTIFIER = mli.TreeHacks25App;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -792,7 +784,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25AppTests;
+				PRODUCT_BUNDLE_IDENTIFIER = mli.TreeHacks25AppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -812,7 +804,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25AppTests;
+				PRODUCT_BUNDLE_IDENTIFIER = mli.TreeHacks25AppTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -830,7 +822,7 @@
 				DEVELOPMENT_TEAM = RDYDWP5W98;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25AppUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = mli.TreeHacks25AppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -848,7 +840,7 @@
 				DEVELOPMENT_TEAM = RDYDWP5W98;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25AppUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = mli.TreeHacks25AppUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -882,7 +874,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25App.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = mli.TreeHacks25App.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -918,7 +910,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = llanoopc.TreeHacks25App.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = mli.TreeHacks25App.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -939,7 +931,7 @@
 				DEVELOPMENT_TEAM = RDYDWP5W98;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "llanoopc.WatchAppCompanion-Watch-AppTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "mli.WatchAppCompanion-Watch-AppTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -960,7 +952,7 @@
 				DEVELOPMENT_TEAM = RDYDWP5W98;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "llanoopc.WatchAppCompanion-Watch-AppTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "mli.WatchAppCompanion-Watch-AppTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -980,7 +972,7 @@
 				DEVELOPMENT_TEAM = RDYDWP5W98;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "llanoopc.WatchAppCompanion-Watch-AppUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "mli.WatchAppCompanion-Watch-AppUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -1000,7 +992,7 @@
 				DEVELOPMENT_TEAM = RDYDWP5W98;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "llanoopc.WatchAppCompanion-Watch-AppUITests";
+				PRODUCT_BUNDLE_IDENTIFIER = "mli.WatchAppCompanion-Watch-AppUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SWIFT_EMIT_LOC_STRINGS = NO;

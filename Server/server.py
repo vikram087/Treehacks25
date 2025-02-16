@@ -26,7 +26,7 @@ CHROMA_API_KEY = os.getenv("CHROMA_API_KEY")
 CHROMA_TENANT = os.getenv("CHROMA_TENANT")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completions"
+MISTRAL_API_URL = "https://api.mistral.ai/v1/chat/completion s"
 ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 ELEVENLABS_VOICE_ID = os.getenv(
     "ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM"
@@ -658,12 +658,22 @@ def alert_status():
             print(message.sid)
 
             # Initiate the conversation with the watch
-            question = """Hi, I'm an AI therapist. I've noticed that you've been having some mood swings.
+            question_text = """Hi, I'm an AI therapist. I've noticed that you've been having some mood swings.
             Can you tell me how you are feeling right now?"""
+            
+            # Convert text to speech
+            audio_base64 = text_to_speech(question_text)
+            if audio_base64 is None:
+                return jsonify({"error": "Failed to generate audio"}), 500
         else:
-            question = ""
+            question_text = ""
+            audio_base64 = None
 
-        return jsonify({"critical": is_critical, "question": question}), 200
+        return jsonify({
+            "critical": is_critical, 
+            "question_text": question_text,
+            "question": audio_base64
+        }), 200
 
     except Exception as e:
         print("Error storing metrics:", e)
