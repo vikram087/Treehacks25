@@ -44,7 +44,9 @@ function NavDropdown({ patients }) {
 									Object.values(patients).map((patient) => (
 										<li
 											key={patient.user_id}
-											onClick={() => navigate(`/dash/${patient.user_id}`)}
+											onClick={() =>
+												navigate(`/patient-profile/${patient.user_id}`)
+											}
 											className="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
 										>
 											{patient.name}
