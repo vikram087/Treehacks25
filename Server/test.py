@@ -17,6 +17,10 @@ API_URL = "http://localhost:8080"
 response = requests.get(f"{API_URL}/api/health")
 print("Health Check:", response.status_code, response.json())
 
+NAME = "Lebron James"
+EMAIL = "info@klutchsports.com"
+NUM_DOCS = 3
+
 
 def respond(question):
     try:
@@ -38,7 +42,7 @@ def respond(question):
                 },
                 {
                     "role": "user",
-                    "content": f"Here is a professional interviewer asking a question: {question}, please respond to it. Keep your answers VERY BRIEF.",
+                    "content": f"Here is a professional interviewer asking a question: {question}, please respond to it. Keep your answers as brief as possible.",
                 },
             ],
             "temperature": 0.7,
@@ -69,37 +73,41 @@ data = {
     "question_text": None,
     "bio-data": {"heart_rate": 85, "steps": 3200},
     "end": False,
+    "metadata": {"name": NAME, "email": EMAIL},
 }
 
-while True:
-    response = requests.post(f"{API_URL}/assessment", json=data)
-    res = response.json()
-    try:
-        num = res["num"]
-    except Exception as e:
-        print("res has no attribute 'num'", e)
-        time.sleep(3)
-        continue
+for i in range(NUM_DOCS):
+    print(f"Uploading doc {i}")
+    while True:
+        response = requests.post(f"{API_URL}/assessment", json=data)
+        res = response.json()
+        try:
+            num = res["num"]
+        except Exception as e:
+            print("res has no attribute 'num'", e)
+            time.sleep(3)
+            continue
 
-    num += 1
+        if "[CONVERSATION ENDED]" in res["question_text"] or num >= 2:
+            print(json.dumps(res, indent=4))
+            upload(res["history"], res["bio-data"], metadata=res["metadata"])
+            break
 
-    if "[CONVERSATION ENDED]" in res["question_text"] or num >= 16:
-        print(json.dumps(res, indent=4))
-        upload(res["history"], res["bio-data"])
-        break
+        num += 1
 
-    answer = respond(res["question_text"])
+        answer = respond(res["question_text"])
 
-    print(f"Question: {res["question_text"]}\nAnswer: {answer}")
+        print(f"Question: {res["question_text"]}\nAnswer: {answer}\n")
 
-    hist = res["history"]
-    hist.append({"question": res["question_text"], "answer": answer})
+        hist = res["history"]
+        hist.append({"question": res["question_text"], "answer": answer})
 
-    data = {
-        "num": num,
-        "history": hist,
-        "question": None,
-        "question_text": None,
-        "bio-data": {"heart_rate": 85, "steps": 3200},
-        "end": False,
-    }
+        data = {
+            "num": num,
+            "history": hist,
+            "question": None,
+            "question_text": None,
+            "bio-data": {"heart_rate": 85, "steps": 3200},
+            "end": False,
+            "metadata": {"name": NAME, "email": EMAIL},
+        }

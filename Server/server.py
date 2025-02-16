@@ -2,6 +2,7 @@ import base64
 import json
 import os
 import uuid
+from datetime import datetime
 from io import BytesIO
 from typing import Optional
 
@@ -94,7 +95,33 @@ def get_qa_analysis(qa: list[dict]) -> Optional[str]:
         return None
 
 
-def upload(history: list[dict], bio_data: dict, metadata=None) -> bool:
+def create_or_upload_user(email: str, name: str) -> tuple[str, int]:
+    try:
+        if not email or not name:
+            return "", 404
+
+        docs = fetch_collection("patients")
+
+        collection = chroma_client.get_or_create_collection(name="patients")
+
+        for doc in docs:
+            if email == doc["document"]["email"] and name == doc["document"]["name"]:
+                return doc["id"], 200
+
+        new_id = f"{uuid.uuid4()}"
+        collection.add(
+            ids=[new_id],
+            documents=[json.dumps({"name": name, "email": email})],
+        )
+
+        return new_id, 201
+
+    except Exception as e:
+        print("Failed to upload data", e)
+        return "", 500
+
+
+def upload(history: list[dict], bio_data: dict, metadata: dict) -> bool:
     try:
         if not history or not bio_data:
             return False
@@ -105,12 +132,17 @@ def upload(history: list[dict], bio_data: dict, metadata=None) -> bool:
             "history": history,
             "summary": get_qa_analysis(history),
             "bio-data": bio_data,
+            "timestamp": datetime.now().isoformat(),
         }
+
+        user_id, status = create_or_upload_user(metadata["email"], metadata["name"])
+        if status >= 200 and status < 300:
+            metadata["user_id"] = user_id
 
         collection.add(
             ids=[f"{uuid.uuid4()}"],
             documents=[json.dumps(document)],
-            metadatas=[metadata] if metadata is not None else None,
+            metadatas=[metadata],
         )
 
         return True
@@ -151,6 +183,38 @@ def text_to_speech(text: str) -> Optional[str]:
     except Exception as e:
         print(f"Error in text_to_speech: {str(e)}")
         return None
+
+
+def fetch_collection(coll: str) -> list[dict]:
+    try:
+        collection = chroma_client.get_or_create_collection(name=coll)
+        docs = collection.get()
+
+        data = []
+        for doc_id, doc, meta in zip(docs["ids"], docs["documents"], docs["metadatas"]):
+            data.append({"id": doc_id, "document": json.loads(doc), "metadata": meta})
+
+        return data
+    except Exception as e:
+        print(e)
+        return [{}]
+
+
+@app.route("/fetch-patient-data/<collection>", methods=["GET"])
+def fetch_data(collection: str):
+    try:
+        data = fetch_collection(collection)
+
+        sorted_data = sorted(
+            data,
+            key=lambda x: datetime.fromisoformat(x["document"]["timestamp"]),
+            reverse=True,
+        )
+
+        return jsonify({"success": True, "data": sorted_data}), 200
+    except Exception as e:
+        print(e)
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @app.route("/assessment", methods=["POST"])
@@ -215,6 +279,7 @@ def assessment() -> tuple[Response, int]:
                 "bio-data",
                 "end",
                 "question_text",
+                "metadata",
             ]
         ):
             return jsonify({"error": "Invalid input format"}), 400
@@ -223,10 +288,15 @@ def assessment() -> tuple[Response, int]:
         chat_history = data["history"]
         user_input = data["question"]
         end = data["end"]
+        meta = data["metadata"]
 
         # If conversation is ended, upload to database
         if end or data["num"] >= 16:
-            upload(chat_history, data["bio-data"])
+            upload(
+                chat_history,
+                data["bio-data"],
+                metadata=meta,
+            )
             return jsonify(
                 {
                     "num": data["num"],
@@ -235,6 +305,7 @@ def assessment() -> tuple[Response, int]:
                     "question": None,
                     "end": True,
                     "bio-data": data["bio-data"],
+                    "metadata": meta,
                 }
             ), 200
 
@@ -261,8 +332,8 @@ def assessment() -> tuple[Response, int]:
         response = model.generate_content(prompt)
 
         # Convert text to speech
-        audio_base64 = text_to_speech(response.text)
-        # audio_base64 = "TIOWEHFogih3wogwrehgo9ughw3roiughqewrp"
+        # audio_base64 = text_to_speech(response.text)
+        audio_base64 = "TIOWEHFogih3wogwrehgo9ughw3roiughqewrp"
 
         if audio_base64 is None:
             return jsonify({"error": "Failed to generate audio"}), 500
@@ -275,6 +346,7 @@ def assessment() -> tuple[Response, int]:
                 "question_text": response.text,
                 "end": end,
                 "bio-data": data["bio-data"],
+                "metadata": meta,
             }
         ), 200
 
@@ -290,9 +362,9 @@ def chat() -> tuple[Response, int]:
     if "question" not in data:
         return jsonify({"error": "Question is required"}), 400
 
-    user_question = data['question']
-    conv_chain = data['conversation-chain']
-    chat_history = data['chat-history']
+    user_question = data["question"]
+    conv_chain = data["conversation-chain"]
+    chat_history = data["chat-history"]
 
     headers = {
         "Authorization": f"Bearer {MISTRAL_API_KEY}",
@@ -308,7 +380,7 @@ def chat() -> tuple[Response, int]:
         "messages": [
             {
                 "role": "system",
-                "content": "You are a helpful medical assistant. Use the provided conversation chain for context, but focus on giving direct and relevant responses to the user's questions."
+                "content": "You are a helpful medical assistant. Use the provided conversation chain for context, but focus on giving direct and relevant responses to the user's questions.",
             },
             {
                 "role": "user",
@@ -322,8 +394,8 @@ def chat() -> tuple[Response, int]:
                 Current Question: {user_question}
 
                 Please provide a helpful response to the current question, using the reference information and conversation history as context.
-                """
-            }
+                """,
+            },
         ],
         "temperature": 0.7,
         "max_tokens": 300,
