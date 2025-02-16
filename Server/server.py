@@ -7,15 +7,15 @@ from io import BytesIO
 from typing import Optional
 
 import chromadb
-from twilio.rest import Client
 import google.generativeai as genai
 import requests
-import whispr
+import whisper
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
+from twilio.rest import Client
 
-# whispr_model = whispr.load_model("base")
+whispr_model = whisper.load_model("base")
 
 app = Flask(__name__)
 CORS(app)
@@ -51,16 +51,8 @@ def health() -> tuple[Response, int]:
     return jsonify({"message": "Success"}), 200
 
 
-def transcribe(request) -> str:
+def transcribe(audio_file) -> str:
     try:
-        # Ensure a file was uploaded
-        if "file" not in request.files:
-            return ""
-
-        audio_file = request.files["file"]
-        if audio_file.filename == "":
-            return ""
-
         # Save the file temporarily
         temp_filename = f"{uuid.uuid4()}.wav"
         audio_file.save(temp_filename)
@@ -269,9 +261,6 @@ def assessment() -> tuple[Response, int]:
         4. Exercise and Fitness
         5. Relationships and Social Interaction
         """
-        # TOPICS = """
-        # 1. Mood and Emotions
-        # """
 
         INSTRUCTIONS = f"""
         You are a behavioral psychologist. You are to facilitate a conversation with the user
@@ -300,44 +289,56 @@ def assessment() -> tuple[Response, int]:
         # ==============================================
         # CONVERSATION
         # ==============================================
-        data = request.get_json()
+        data = request.form
+        print("REQUEST:", data, "\n\n")
 
         # Validate input format
-        if not all(
-            key in data
-            for key in [
-                "num",
-                "history",
-                "question",
-                "end",
-                "question_text",
-                "metadata",
-                "answer_audio",
-            ]
-        ):
-            return jsonify({"error": "Invalid input format"}), 400
+        # if not all(
+        #     key in data
+        #     for key in [
+        #         "num",  # which question (server)
+        #         "history",  # chat history (server)
+        #         "question",  # ai question asked (server)
+        #         "end",  # is convo done (server)
+        #         "question_text",  # question in text (server)
+        #         "metadata",  # name, email (watch)
+        #     ]
+        # ):
+        #     return jsonify({"error": "Invalid input format"}), 400
 
         # Format the conversation history
-        chat_history = data["history"]
-        user_input = data["question"]
-        end = data["end"]
-        meta = data["metadata"]
+        num = int(data.get("num", 0))
+        chat_history = json.loads(data.get("history", "[]"))
+        # ai_question_audio = data["question"]
+        end = data.get("end", "false").lower() == "true"
+        ai_question_text = data.get("question_text", "")
+        meta = json.loads(data.get("metadata", "{}"))
+        audio_file = request.files["answer_audio"]  # audio response sent by watch
+
+        if audio_file.filename == "" or ai_question_text == "" or len(meta) == 0:
+            return jsonify({"error": "invalid input"}), 400
+
+        answer_text = transcribe(audio_file)
+
+        print("TRANSCRIBED AUDIO:", answer_text, "\n\n")
+
+        chat_history.append({"question": ai_question_text, "answer": answer_text})
 
         # If conversation is ended, upload to database
-        if end or data["num"] >= 16:
+        if end or num >= 10:
+            print("UPLOADING", "\n\n")
             upload(
                 chat_history,
                 metadata=meta,
             )
             return jsonify(
                 {
-                    "num": data["num"],
+                    "num": num,
                     "history": chat_history,
                     "question_text": None,
                     "question": None,
                     "end": True,
                     "metadata": meta,
-                    "answer_audio": None,
                 }
             ), 200
 
@@ -350,21 +351,19 @@ def assessment() -> tuple[Response, int]:
 
         history: {chat_history}
         
-        user input: {user_input}
-
         ----- TASK -----
 
-        Please response to the user according to the instructions and current conversation.
+        Please response to the user or start the conversation according to the instructions and current conversation.
         Give a short question response to the user as your sole output. Remember, only ask
         up to 2 follow up questions per theme and end the conversation once all topics have been
         covered.
         """
 
         # Generate response
-        response = model.generate_content(prompt)
+        response = model.generate_content(prompt).text
 
         # Convert text to speech
-        # audio_base64 = text_to_speech(response.text)
+        # audio_base64 = text_to_speech(response)
         audio_base64 = "TIOWEHFogih3wogwrehgo9ughw3roiughqewrp"
 
         if audio_base64 is None:
@@ -372,13 +371,12 @@ def assessment() -> tuple[Response, int]:
 
         return jsonify(
             {
-                "num": data["num"],
+                "num": num + 1,
                 "history": chat_history,
                 "question": audio_base64,
-                "question_text": response.text,
-                "end": end,
+                "question_text": response,
+                "end": False,
                 "metadata": meta,
-                "answer_audio": None,
             }
         ), 200
 
@@ -451,58 +449,51 @@ def chat() -> tuple[Response, int]:
 def alert_status():
     try:
         data = request.get_json()
-        
+
         # First, ensure user exists/create if needed
         user_id, status = create_or_upload_user(data["userEmail"], data["userName"])
-        
+
         if status >= 400:
             return jsonify({"error": "Failed to process user"}), status
-            
+
         # Add user_id to the metrics
         data["user_id"] = user_id
-        
+
         # Store the entire payload in ChromaDB
         collection = chroma_client.get_or_create_collection(name="user_metrics")
-        
+
         current_time = datetime.now().isoformat()
-        document = {
-            "metrics": data,
-            "timestamp": current_time,
-            "user_id": user_id
-        }
-        
+        document = {"metrics": data, "timestamp": current_time, "user_id": user_id}
+
         collection.add(
             ids=[f"{uuid.uuid4()}"],
             documents=[json.dumps(document)],
-            metadatas=[{
-                "email": data["userEmail"], 
-                "name": data["userName"],
-                "timestamp": current_time,
-                "user_id": user_id
-            }]
+            metadatas=[
+                {
+                    "email": data["userEmail"],
+                    "name": data["userName"],
+                    "timestamp": current_time,
+                    "user_id": user_id,
+                }
+            ],
         )
 
         # Check for critical state
         is_critical = data["agitation"] > 50
-        
+
         if is_critical:
             message = TWILIO_CLIENT.messages.create(
-                from_=TWILIO_PHONE_NUMBER,
-                body='Alert! Mood swing!',
-                to='+16047806112'
+                from_=TWILIO_PHONE_NUMBER, body="Alert! Mood swing!", to="+16047806112"
             )
             print(message.sid)
-            
+
             # Initiate the conversation with the watch
             question = """Hi, I'm an AI therapist. I've noticed that you've been having some mood swings.
             Can you tell me how you are feeling right now?"""
         else:
             question = ""
 
-        return jsonify({
-            "critical": is_critical,
-            "question": question
-        }), 200
+        return jsonify({"critical": is_critical, "question": question}), 200
 
     except Exception as e:
         print("Error storing metrics:", e)
@@ -513,52 +504,54 @@ def alert_status():
 def health_metrics(metric_type):
     try:
         data = request.get_json()
-        
+
         # Validate metric type
         if metric_type not in ["sleep", "activity"]:
             return jsonify({"error": "Invalid metric type"}), 400
-        
+
         # First, ensure user exists/create if needed
         user_id, status = create_or_upload_user(data["userEmail"], data["userName"])
-        
+
         if status >= 400:
             return jsonify({"error": "Failed to process user"}), status
-            
+
         # Add user_id to the metrics
         data["user_id"] = user_id
-        
+
         # Store the entire payload in ChromaDB
         collection_name = f"user_{metric_type}_metrics"
         collection = chroma_client.get_or_create_collection(name=collection_name)
-        
+
         current_time = datetime.now().isoformat()
         document = {
             "metrics": data,
             "timestamp": current_time,
             "user_id": user_id,
-            "metric_type": metric_type
+            "metric_type": metric_type,
         }
-        
+
         collection.add(
             ids=[f"{uuid.uuid4()}"],
             documents=[json.dumps(document)],
-            metadatas=[{
-                "email": data["userEmail"], 
-                "name": data["userName"],
-                "timestamp": current_time,
-                "user_id": user_id,
-                "metric_type": metric_type
-            }]
+            metadatas=[
+                {
+                    "email": data["userEmail"],
+                    "name": data["userName"],
+                    "timestamp": current_time,
+                    "user_id": user_id,
+                    "metric_type": metric_type,
+                }
+            ],
         )
 
-        return jsonify({
-            "success": True,
-            "message": f"{metric_type} metrics recorded successfully"
-        }), 200
+        return jsonify(
+            {"success": True, "message": f"{metric_type} metrics recorded successfully"}
+        ), 200
 
     except Exception as e:
         print(f"Error storing {metric_type} metrics:", e)
         return jsonify({"error": str(e)}), 500
-    
+
+
 if __name__ == "__main__":
     app.run(port=8080, debug=True)

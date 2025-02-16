@@ -1,11 +1,10 @@
+import base64
 import json
 import os
 import time
 
 import requests
 from dotenv import load_dotenv
-
-from server import upload
 
 load_dotenv("./.env")
 
@@ -19,7 +18,16 @@ print("Health Check:", response.status_code, response.json())
 
 NAME = "Lebron James"
 EMAIL = "info@klutchsports.com"
-NUM_DOCS = 3
+NUM_DOCS = 1
+AUDIO_PATH = "./test_audio.wav"
+
+
+def save_base64_audio(audio_base64: str, filename: str):
+    """Decode base64-encoded audio and save to a local file."""
+    audio_data = base64.b64decode(audio_base64)
+    with open(filename, "wb") as f:
+        f.write(audio_data)
+    return filename
 
 
 def respond(question):
@@ -67,47 +75,55 @@ def respond(question):
 
 
 data = {
-    "num": 0,
-    "history": [],
-    "question": None,
-    "question_text": None,
-    "bio-data": {"heart_rate": 85, "steps": 3200},
-    "end": False,
-    "metadata": {"name": NAME, "email": EMAIL},
+    "num": "0",
+    "history": "[]",
+    "question": "",
+    "question_text": "Hello, I'm an AI behavioral psychologist. To start, could you describe your current mood and emotions?",
+    "end": "false",
+    "metadata": json.dumps({"name": NAME, "email": EMAIL}),
 }
 
 for i in range(NUM_DOCS):
-    print(f"Uploading doc {i}")
     while True:
-        response = requests.post(f"{API_URL}/assessment", json=data)
-        res = response.json()
-        try:
-            num = res["num"]
-        except Exception as e:
-            print("res has no attribute 'num'", e)
-            time.sleep(3)
-            continue
+        with open(AUDIO_PATH, "rb") as audio_file:
+            try:
+                files = {"answer_audio": audio_file.read()}
 
-        if "[CONVERSATION ENDED]" in res["question_text"] or num >= 2:
-            print(json.dumps(res, indent=4))
-            upload(res["history"], res["bio-data"], metadata=res["metadata"])
-            break
+                response = requests.post(
+                    f"{API_URL}/assessment",
+                    data=data,
+                    files=files,
+                )
+                res = response.json()
+                print("SERVER RESPONSE:", res, "\n\n")
 
-        num += 1
+                # local_file = save_base64_audio(
+                #     res["question"], "./test_audio_output.wav"
+                # )
 
-        answer = respond(res["question_text"])
+                data = {
+                    "num": str(res["num"]),
+                    "history": json.dumps(res["history"]),
+                    "question": res["question"],
+                    "question_text": res["question_text"],
+                    "end": str(res["end"]).lower(),
+                    "metadata": json.dumps(res["metadata"]),
+                }
+                num = res["num"]
+            except Exception as e:
+                print("Response exception:", e)
+                time.sleep(3)
+                continue
 
-        print(f"Question: {res["question_text"]}\nAnswer: {answer}\n")
+            if "[CONVERSATION ENDED]" in res["question_text"] or num >= 2:
+                print("END IS TRUE", "\n\n")
+                data["end"] = "true"
+                response = requests.post(
+                    f"{API_URL}/assessment",
+                    data=data,
+                    files=files,
+                )
+                print("FINAL RESPONSE:", response.json(), "\n\n")
+                break
 
-        hist = res["history"]
-        hist.append({"question": res["question_text"], "answer": answer})
-
-        data = {
-            "num": num,
-            "history": hist,
-            "question": None,
-            "question_text": None,
-            "bio-data": {"heart_rate": 85, "steps": 3200},
-            "end": False,
-            "metadata": {"name": NAME, "email": EMAIL},
-        }
+            answer = respond(res["question_text"])
