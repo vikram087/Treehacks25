@@ -34,7 +34,7 @@ function PatientRecords({ patientData }) {
 					<div
 						key={patient.id}
 						className="bg-gray-50 p-5 mb-4 rounded-lg border hover:shadow-md transition-all"
-						onClick={() => navigate(`/assessments/${patient.id}`)}
+						onClick={() => navigate(`/assessment/${patient.id}`)}
 					>
 						<h3 className="text-lg font-semibold text-gray-900">
 							{formatTimestamp(patient.document?.timestamp) || "Time Uncertain"}

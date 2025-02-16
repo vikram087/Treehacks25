@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { useParams } from "react-router-dom";
 import PatientRecords from "./components/PatientRecords";
+import ChatBot from "./components/ChatBot";
 
 function PatientProfile() {
 	const [patientData, setPatientData] = useState([]);
@@ -301,6 +302,9 @@ function PatientProfile() {
 						</div>
 					</div>
 				</div>
+				<ChatBot
+					conversationChain={patientData.map((data) => data?.document?.history)}
+				/>
 			</main>
 		</div>
 	);
