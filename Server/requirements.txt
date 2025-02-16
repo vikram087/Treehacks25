@@ -2,4 +2,4 @@ Flask==3.1.0
 Flask-Cors==5.0.0
 chromadb==0.6.3
 python-dotenv==1.0.1
-zoomus
+zoomus==1.2.1

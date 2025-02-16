@@ -2,17 +2,19 @@ import base64
 import json
 import os
 import uuid
-from datetime import datetime, timedelta
+from datetime import datetime
 from io import BytesIO
 from typing import Optional
 
 import chromadb
 import google.generativeai as genai
 import requests
+import whispr
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
-from zoomus import ZoomClient
+
+whispr_model = whispr.load_model("base")
 
 app = Flask(__name__)
 CORS(app)
@@ -37,9 +39,37 @@ chroma_client = chromadb.HttpClient(
     headers={"x-chroma-token": CHROMA_API_KEY},
 )
 
+
 @app.route("/api/health", methods=["GET"])
 def health() -> tuple[Response, int]:
     return jsonify({"message": "Success"}), 200
+
+
+def transcribe(request) -> str:
+    try:
+        # Ensure a file was uploaded
+        if "file" not in request.files:
+            return ""
+
+        audio_file = request.files["file"]
+        if audio_file.filename == "":
+            return ""
+
+        # Save the file temporarily
+        temp_filename = f"{uuid.uuid4()}.wav"
+        audio_file.save(temp_filename)
+
+        # Perform transcription
+        result = whispr_model.transcribe(temp_filename)
+
+        # Remove temporary file
+        os.remove(temp_filename)
+
+        return result["text"]
+
+    except Exception as e:
+        print(e)
+        return ""
 
 
 def get_qa_analysis(qa: list[dict]) -> Optional[str]:
@@ -121,9 +151,9 @@ def create_or_upload_user(email: str, name: str) -> tuple[str, int]:
         return "", 500
 
 
-def upload(history: list[dict], bio_data: dict, metadata: dict) -> bool:
+def upload(history: list[dict], metadata: dict) -> bool:
     try:
-        if not history or not bio_data:
+        if not history:
             return False
 
         collection = chroma_client.get_or_create_collection(name="patient_records")
@@ -131,7 +161,6 @@ def upload(history: list[dict], bio_data: dict, metadata: dict) -> bool:
         document = {
             "history": history,
             "summary": get_qa_analysis(history),
-            "bio-data": bio_data,
             "timestamp": datetime.now().isoformat(),
         }
 
@@ -274,10 +303,10 @@ def assessment() -> tuple[Response, int]:
                 "num",
                 "history",
                 "question",
-                "bio-data",
                 "end",
                 "question_text",
                 "metadata",
+                "answer_audio",
             ]
         ):
             return jsonify({"error": "Invalid input format"}), 400
@@ -292,7 +321,6 @@ def assessment() -> tuple[Response, int]:
         if end or data["num"] >= 16:
             upload(
                 chat_history,
-                data["bio-data"],
                 metadata=meta,
             )
             return jsonify(
@@ -302,8 +330,8 @@ def assessment() -> tuple[Response, int]:
                     "question_text": None,
                     "question": None,
                     "end": True,
-                    "bio-data": data["bio-data"],
                     "metadata": meta,
+                    "answer_audio": None,
                 }
             ), 200
 
@@ -343,8 +371,8 @@ def assessment() -> tuple[Response, int]:
                 "question": audio_base64,
                 "question_text": response.text,
                 "end": end,
-                "bio-data": data["bio-data"],
                 "metadata": meta,
+                "answer_audio": None,
             }
         ), 200
 
@@ -411,6 +439,7 @@ def chat() -> tuple[Response, int]:
         return jsonify({"response": bot_response}), 200
     else:
         return jsonify({"error": "Failed to get a response from Mistral"}), 500
+
 
 if __name__ == "__main__":
     app.run(port=8080, debug=True)
