@@ -22,61 +22,81 @@ struct WatchView: View {
     @State private var recordingURL: URL?
     @State private var conversationNum = 0
     @State private var conversationHistory: [[String: String]] = []
-    @State private var isLoading = false // New loading state
+    @State private var isLoading = false
 
     var body: some View {
         if biomarkerMonitor.isCriticalState {
-            // Conversation View
-            VStack(spacing: 12) {
-                Text("AI Therapist")
-                    .font(.headline)
-                
-                if isLoading {
-                    // Loading Animation
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .scaleEffect(1.5)
-                        .padding(.vertical, 20)
-                } else {
-                    // Regular Content
-                    Text(biomarkerMonitor.therapistMessage)
-                        .font(.body)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
-                    
-                    if audioPlayer != nil {
-                        Button(action: playTherapistMessage) {
-                            Image(systemName: "play.circle.fill")
-                                .font(.title)
-                                .foregroundColor(.blue)
+            // Beautiful Conversation View
+            ZStack {
+                // Content
+                VStack(spacing: 0) {
+                    // Top Navigation
+                    ZStack {
+                        Button(action: {
+                            withAnimation {
+                                biomarkerMonitor.isCriticalState = false
+                                audioPlayer?.stop()
+                                audioPlayer = nil
+                            }
+                        }) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 15, weight: .semibold))
+                                .foregroundColor(.green).opacity(0)
                         }
-                    }
-                    
-                    // Record Button
-                    Button(action: toggleRecording) {
-                        Image(systemName: isRecording ? "stop.circle.fill" : "mic.circle.fill")
-                            .font(.system(size: 40))
-                            .foregroundColor(isRecording ? .red : .blue)
-                    }
-                    .padding()
-                }
-                
-                Button(action: {
-                    withAnimation {
-                        biomarkerMonitor.isCriticalState = false
-                        audioPlayer?.stop()
-                        audioPlayer = nil
-                    }
-                }) {
-                    HStack {
-                        Image(systemName: "arrow.left")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 6)
                         
+                        Text("MindShift")
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
                     }
-                    .padding(.vertical, 8)
+                    .padding(.top, 6)
+                    .padding(.horizontal, 12)
+                    .padding(.top, 6)
+                    
+                    if isLoading {
+                        Spacer()
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle())
+                            .scaleEffect(1.2)
+                            .tint(.white)
+                        Spacer()
+                    } else {
+                        ScrollView {
+                            VStack(spacing: 16) {
+                                Text(biomarkerMonitor.therapistMessage)
+                                    .font(.system(size: 17))
+                                    .foregroundColor(.white)
+                                    .multilineTextAlignment(.center)
+                                    .padding(.horizontal, 12)
+                                    .padding(.top, 12)
+                            }
+                        }
+                        .scrollDismissesKeyboard(.interactively)
+                        
+                        Spacer()
+                        
+                        // Recording Button in capsule
+                        Button(action: toggleRecording) {
+                            Capsule()
+                                .fill(Color.black)
+                                .frame(height: 46)
+                                .overlay(
+                                    HStack(spacing: 8) {
+                                        Image(systemName: isRecording ? "stop.fill" : "mic.fill")
+                                            .font(.system(size: 20))
+                                            .foregroundColor(isRecording ? .red : .blue)
+                                    }
+                                )
+                        }
+                        .padding(.horizontal, 40)
+                        .padding(.bottom, 8)
+                        .disabled(isLoading)
+                    }
                 }
             }
-            .padding()
-            .transition(.opacity)
+            .background(Color.black)
+            .edgesIgnoringSafeArea(.all)
         } else {
             // Biometrics View
             VStack(spacing: 8) {
@@ -191,14 +211,12 @@ struct WatchView: View {
         audioRecorder?.stop()
         isRecording = false
         
-        // Send the recording to server
         if let url = recordingURL {
             sendRecordingToServer(fileURL: url)
         }
     }
     
     private func sendRecordingToServer(fileURL: URL) {
-        // Start loading state
         isLoading = true
         
         print("Starting to send recording...")
@@ -209,8 +227,9 @@ struct WatchView: View {
         request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
         
         var data = Data()
+        
         // Add form fields
-        let metadata = ["name": biomarkerMonitor.userName, "email": biomarkerMonitor.userEmail]
+        let metadata = ["userName": biomarkerMonitor.userName, "userEmail": biomarkerMonitor.userEmail]
         print("Sending metadata:", metadata)
         
         // Add metadata
@@ -247,7 +266,7 @@ struct WatchView: View {
             if let error = error {
                 print("Error sending recording: \(error)")
                 DispatchQueue.main.async {
-                    isLoading = false // End loading on error
+                    isLoading = false
                 }
                 return
             }
@@ -265,6 +284,7 @@ struct WatchView: View {
                         // Setup next question
                         self.biomarkerMonitor.therapistMessage = response.question_text
                         
+                        // Auto-play the audio response
                         if let audioData = Data(base64Encoded: response.question) {
                             print("Received new audio data, size: \(audioData.count)")
                             do {
@@ -272,7 +292,8 @@ struct WatchView: View {
                                 self.audioPlayer = nil
                                 self.audioPlayer = try AVAudioPlayer(data: audioData)
                                 self.audioPlayer?.prepareToPlay()
-                                print("Successfully created new audio player")
+                                self.audioPlayer?.play() // Auto-play the response
+                                print("Started playing audio response")
                             } catch {
                                 print("Failed to create audio player: \(error)")
                             }
@@ -283,8 +304,7 @@ struct WatchView: View {
                         print("Conversation ended")
                     }
                     
-                    // End loading state
-                    self.isLoading = false
+                    isLoading = false
                 }
             } else {
                 print("Failed to decode server response")
@@ -293,7 +313,7 @@ struct WatchView: View {
                     print("Raw response:", responseStr)
                 }
                 DispatchQueue.main.async {
-                    isLoading = false // End loading on decode error
+                    isLoading = false
                 }
             }
         }
@@ -312,18 +332,15 @@ struct WatchView: View {
                     self.audioPlayer?.stop()
                     self.audioPlayer = nil
                     
-                    // Create new player
+                    // Create new player and autoplay
                     audioPlayer = try AVAudioPlayer(data: audioData)
                     audioPlayer?.prepareToPlay()
+                    audioPlayer?.play()
                 } catch {
                     print("Failed to create audio player: \(error)")
                 }
             }
         }
-    }
-    
-    private func playTherapistMessage() {
-        audioPlayer?.play()
     }
     
     private func initializeTerra() {
