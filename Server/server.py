@@ -193,7 +193,6 @@ def fetch_collection(coll: str) -> list[dict]:
         data = []
         for doc_id, doc, meta in zip(docs["ids"], docs["documents"], docs["metadatas"]):
             data.append({"id": doc_id, "document": json.loads(doc), "metadata": meta})
-
         return data
     except Exception as e:
         print(e)
@@ -210,7 +209,6 @@ def fetch_data(collection: str):
             key=lambda x: datetime.fromisoformat(x["document"]["timestamp"]),
             reverse=True,
         )
-
         return jsonify({"success": True, "data": sorted_data}), 200
     except Exception as e:
         print(e)

@@ -18,6 +18,7 @@ function Dashboard() {
 				const res = await fetch(
 					`${import.meta.env.VITE_BACKEND_URL}/fetch-patient-data/patient_records`,
 				);
+
 				const data = await res.json();
 				setPatientData(data.data);
 				setPatients(
