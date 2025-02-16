@@ -560,3 +560,5 @@ def health_metrics(metric_type):
         print(f"Error storing {metric_type} metrics:", e)
         return jsonify({"error": str(e)}), 500
     
+if __name__ == "__main__":
+    app.run(port=8080, debug=True)
