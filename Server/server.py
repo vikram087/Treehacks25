@@ -2,7 +2,7 @@ import base64
 import json
 import os
 import uuid
-from datetime import datetime
+from datetime import datetime, timedelta
 from io import BytesIO
 from typing import Optional
 
@@ -12,6 +12,7 @@ import requests
 from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
+from zoomus import ZoomClient
 
 app = Flask(__name__)
 CORS(app)
@@ -35,7 +36,6 @@ chroma_client = chromadb.HttpClient(
     database="Treehacks25",
     headers={"x-chroma-token": CHROMA_API_KEY},
 )
-
 
 @app.route("/api/health", methods=["GET"])
 def health() -> tuple[Response, int]:
@@ -411,7 +411,6 @@ def chat() -> tuple[Response, int]:
         return jsonify({"response": bot_response}), 200
     else:
         return jsonify({"error": "Failed to get a response from Mistral"}), 500
-
 
 if __name__ == "__main__":
     app.run(port=8080, debug=True)

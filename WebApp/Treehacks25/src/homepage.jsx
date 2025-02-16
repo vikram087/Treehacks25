@@ -1,5 +1,5 @@
 import React from "react";
-import { Bell, Activity, Flag, ChevronRight, LogIn } from "lucide-react";
+import { Bell, Activity, Flag, ChevronRight, LogIn, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function App() {
@@ -9,9 +9,10 @@ function App() {
 		<div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
 			<nav className="bg-white border-b border-gray-200 px-6 py-3">
 				<div className="flex items-center justify-between">
-					<h1 className="text-xl font-semibold text-gray-800">
-						Therapist Portal
-					</h1>
+					<div className="flex items-center space-x-2">
+						<Home className="text-gray-800" size={24} />
+						<h1 className="text-xl font-semibold text-gray-800">Home</h1>
+					</div>
 				</div>
 			</nav>
 

@@ -121,6 +121,17 @@ function Dashboard() {
 							</p>
 							<p className="text-sm text-gray-600">Critical Patients</p>
 						</div>
+
+						<div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+							<div className="flex items-center justify-between mb-4">
+								<div className="p-2 bg-green-50 rounded-lg">
+									<Video className="text-green-600" size={24} />
+								</div>
+								<span className="text-sm font-medium text-green-600">Next 30 Days</span>
+							</div>
+							<p className="text-2xl font-bold text-gray-900 mb-1">1</p>
+							<p className="text-sm text-gray-600">Upcoming Meetings</p>
+						</div>
 					</div>
 				</main>
 

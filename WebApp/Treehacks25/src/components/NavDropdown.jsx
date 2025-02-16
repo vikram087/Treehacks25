@@ -43,7 +43,7 @@ function NavDropdown({ patients }) {
 							></path>
 						</svg>
 					</button>
-					<span>Therapist Dashboard</span>
+					<span>Dashboard</span>
 				</h1>
 				<div className="relative" ref={dropdownRef}>
 					<button
