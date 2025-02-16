@@ -7,6 +7,7 @@ from io import BytesIO
 from typing import Optional
 
 import chromadb
+from twilio.rest import Client
 import google.generativeai as genai
 import requests
 import whispr
@@ -14,7 +15,7 @@ from dotenv import load_dotenv
 from flask import Flask, Response, jsonify, request
 from flask_cors import CORS
 
-whispr_model = whispr.load_model("base")
+# whispr_model = whispr.load_model("base")
 
 app = Flask(__name__)
 CORS(app)
@@ -30,6 +31,11 @@ ELEVENLABS_API_KEY = os.getenv("ELEVENLABS_API_KEY")
 ELEVENLABS_VOICE_ID = os.getenv(
     "ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM"
 )  # default voice ID
+
+TWILIO_SID = os.getenv("TWILIO_SID")
+TWILIO_AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TWILIO_PHONE_NUMBER = os.getenv("TWILIO_PHONE_NUMBER")
+TWILIO_CLIENT = Client(TWILIO_SID, TWILIO_AUTH_TOKEN)
 
 chroma_client = chromadb.HttpClient(
     ssl=True,
@@ -439,6 +445,32 @@ def chat() -> tuple[Response, int]:
         return jsonify({"response": bot_response}), 200
     else:
         return jsonify({"error": "Failed to get a response from Mistral"}), 500
+
+
+@app.route("/alert_status", methods=["POST"])
+def alert_status():
+    data = request.get_json()
+
+    if data["hrv"] > 100:
+        message = TWILIO_CLIENT.messages.create(
+            from_=TWILIO_PHONE_NUMBER,
+            body='Alert! Mood swing!',
+            to='+16047806112'
+        )
+        print(message.sid)
+        
+        # Initiate the conversation with the watch
+        question = """Hi, I'm an AI therapist. I've noticed that you've been having some mood swings.
+        Can you tell me how you are feeling right now?"""
+        return jsonify({
+            "critical": True,
+            "question": question
+        }), 200
+
+    return jsonify({
+        "critical": False,
+        "question": ""
+    }), 200
 
 
 if __name__ == "__main__":
