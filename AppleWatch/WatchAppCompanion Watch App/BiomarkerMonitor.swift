@@ -15,6 +15,7 @@ class BiomarkerMonitor: ObservableObject {
     @Published var lastHeartRate: Double = 0.0
     @Published var currentAgitation: Double = 0.0
     
+    
     // Server configuration
     private let baseURL = "http://localhost:8080/" // Change this to your actual server URL
     

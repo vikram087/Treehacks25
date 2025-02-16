@@ -15,20 +15,55 @@ struct WatchView: View {
     @StateObject private var biomarkerMonitor = BiomarkerMonitor(userName: "steve", userEmail: "steve@aol.com")
     
     var body: some View {
-        VStack {
-            Text(isStreaming ? "Streaming Data..." : "Ready to Stream")
-                .padding()
+        VStack(spacing: 8) {
+            // Status text with dot indicator
+            HStack {
+                Circle()
+                    .fill(isStreaming ? Color.green : Color.red)
+                    .frame(width: 6, height: 6)
+                Text(isStreaming ? "Streaming Data..." : "Ready to Stream")
+                    .font(.footnote)
+            }
+            .padding(.vertical, 4)
             
-            // Display current HRV and heart rate
-            Text("Current HRV: \(biomarkerMonitor.currentHRV, specifier: "%.1f")")
-                .padding()
+            // Biometrics display
+            VStack(spacing: 12) {
+                // HRV
+                HStack {
+                    Image(systemName: "waveform.path.ecg")
+                        .foregroundColor(.blue)
+                    Text("HRV:")
+                        .font(.footnote)
+                    Text("\(biomarkerMonitor.currentHRV, specifier: "%.1f")")
+                        .font(.system(.body, design: .rounded))
+                        .bold()
+                }
+                
+                // Heart Rate
+                HStack {
+                    Image(systemName: "heart.fill")
+                        .foregroundColor(.red)
+                    Text("\(biomarkerMonitor.lastHeartRate, specifier: "%.0f")")
+                        .font(.system(.title2, design: .rounded))
+                        .bold()
+                    Text("BPM")
+                        .font(.footnote)
+                }
+                
+                // Agitation Score
+                HStack {
+                    Image(systemName: "hand.raised.fill")
+                        .foregroundColor(.orange)
+                    Text("Agitation:")
+                        .font(.footnote)
+                    Text("\(biomarkerMonitor.currentAgitation, specifier: "%.1f")")
+                        .font(.system(.body, design: .rounded))
+                        .bold()
+                }
+            }
+            .padding(.vertical, 4)
             
-            Text("Heart Rate: \(biomarkerMonitor.lastHeartRate, specifier: "%.0f") BPM")
-                .padding()
-            
-            Text("Agitation Score: \(biomarkerMonitor.currentAgitation, specifier: "%.1f")")
-                .padding()
-            
+            // Control button
             Button(action: {
                 if isStreaming {
                     stopStreaming()
@@ -37,14 +72,21 @@ struct WatchView: View {
                 }
             }) {
                 Text(isStreaming ? "Stop Streaming" : "Start Streaming")
-                    .padding()
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 8)
+                    .cornerRadius(8)
             }
-
+            
             if isWorkout {
-                Text("Workout Active")
-                    .foregroundColor(.green)
+                HStack {
+                    Image(systemName: "figure.run")
+                    Text("Workout Active")
+                }
+                .foregroundColor(.green)
+                .font(.footnote)
             }
         }
+        .padding(.horizontal)
         .onAppear {
             initializeTerra()
             calculateMetrics()
