@@ -483,7 +483,7 @@ def alert_status():
         )
 
         # Check for critical state
-        is_critical = data["hrv"] > 100
+        is_critical = data["agitation"] > 50
         
         if is_critical:
             message = TWILIO_CLIENT.messages.create(

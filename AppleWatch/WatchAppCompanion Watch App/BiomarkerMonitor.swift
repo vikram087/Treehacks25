@@ -16,7 +16,7 @@ class BiomarkerMonitor: ObservableObject {
     @Published var currentAgitation: Double = 0.0
     
     // Server configuration
-    private let baseURL = "http://localhost:8080/api" // Change this to your actual server URL
+    private let baseURL = "http://localhost:8080/" // Change this to your actual server URL
     
     // Buffers
     private var heartRateBuffer: [Double] = []
@@ -33,7 +33,7 @@ class BiomarkerMonitor: ObservableObject {
     }
     
     // MARK: - Server Communication
-    private func postToServer(endpoint: String, payload: [String: Any]) {
+    private func postToServer(endpoint: String, payload: [String: Any], completion: ((Data?, URLResponse?, Error?) -> Void)? = nil) {
         guard let url = URL(string: "\(baseURL)/\(endpoint)") else {
             print("Invalid URL")
             return
@@ -49,6 +49,7 @@ class BiomarkerMonitor: ObservableObject {
             let task = URLSession.shared.dataTask(with: request) { data, response, error in
                 if let error = error {
                     print("Error posting to server: \(error)")
+                    completion?(nil, nil, error)
                     return
                 }
                 
@@ -56,14 +57,12 @@ class BiomarkerMonitor: ObservableObject {
                     print("Server response code: \(httpResponse.statusCode)")
                 }
                 
-                if let data = data,
-                   let responseString = String(data: data, encoding: .utf8) {
-                    print("Server response: \(responseString)")
-                }
+                completion?(data, response, error)
             }
             task.resume()
         } catch {
             print("Error creating request body: \(error)")
+            completion?(nil, nil, error)
         }
     }
     
@@ -99,20 +98,34 @@ class BiomarkerMonitor: ObservableObject {
                 self.currentAgitation = agitationScore
             }
             
-            // Post HRV metrics
-            let hrvPayload: [String: Any] = [
+            // Create payload
+            let payload: [String: Any] = [
                 "hrv": hrvScore,
                 "agitation": agitationScore,
                 "userName": userName,
                 "userEmail": userEmail
             ]
-            postToServer(endpoint: "hrv-metrics", payload: hrvPayload)
+            
+            // Post to server and handle response
+            postToServer(endpoint: "alert_status", payload: payload) { data, response, error in
+                if let data = data,
+                   let responseJson = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let isCritical = responseJson["critical"] as? Bool {
+                    
+                    if isCritical,
+                       let question = responseJson["question"] as? String {
+                        // Handle critical state - You can add your conversation triggering logic here
+                        print("Critical state detected! Question: \(question)")
+                        // Trigger conversation or UI update as needed
+                    }
+                }
+            }
             
             // Clear HRV buffer
             heartRateBuffer.removeAll()
         }
     }
-    
+
     private func processMotion(_ value: Double) {
         // Store raw motion value without early normalization
         motionBuffer.append(value)
@@ -272,7 +285,7 @@ extension BiomarkerMonitor {
                 
                 sleepQualityScore = (durationScore * 0.4 + deepSleepScore * 0.2 + remSleepScore * 0.2 + efficiencyScore * 0.2)
             }
-            
+
             // Create sleep metrics payload
             let sleepMetrics: [String: Any] = [
                 "userName": self.userName,
@@ -284,7 +297,7 @@ extension BiomarkerMonitor {
                 "sleepQualityScore": sleepQualityScore
             ]
             
-            self.postToServer(endpoint: "sleep-metrics", payload: sleepMetrics)
+            self.postToServer(endpoint: "health-metrics/sleep", payload: sleepMetrics)
         }
         
         healthStore.execute(query)
@@ -336,7 +349,7 @@ extension BiomarkerMonitor {
                     "activityScore": activityScore
                 ]
                 
-                self.postToServer(endpoint: "activity-metrics", payload: activityMetrics)
+                self.postToServer(endpoint: "health-metrics/activity", payload: activityMetrics)
             }
             
             healthStore.execute(energyQuery)
